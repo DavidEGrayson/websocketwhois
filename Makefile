@@ -13,6 +13,4 @@ clean:
 	rm -f test_output.txt
 
 demo: build
-	wsc --dir=test_www ruby test.rb
-
-
+	./websocketwhois  --dir=test_www

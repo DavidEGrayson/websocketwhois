@@ -1,17 +1,20 @@
 package main
 
+// TODO: configure emacs to not put tab characters in go code
+
 import (
   "code.google.com/p/go.net/websocket"
-  //"os/exec"
+  "os/exec"
   "log"
   "fmt"
   "net"
   "io"
-  //"bufio"
+  "bufio"
   "os"
   "net/http"
   "reflect"
   "syscall"
+  "strings"
 )
 
 // The connection between a websocket and a process.
@@ -67,15 +70,84 @@ func (c *connection) websocketToProcess() {
       return
     }
     c.log.Println("From websocket:", message)
+    if strings.HasPrefix(message, "w") {
+      domainFragment := strings.ToLower(message[1:])
+      c.whoisRequest(domainFragment)
+    }
+		c.log.Println("Done handling that request")
 
   }
 }
 
-//    err = websocket.Message.Send(c.ws, line)
-//    if err != nil {
-//      if !c.Closed {
-//        c.log.Println("Error sending to websocket:", err)
-//      }
+func (c *connection) whoisRequest(domainFragment string) {
+  c.log.Println("Whois request:", domainFragment)
+
+	domain := domainFragment + ".com" // TODO: this needs a lot of work
+
+	command := exec.Command("whois", "-H", domain)
+  var err error
+
+  outPipe, err := command.StdoutPipe()
+  if err != nil {
+    c.log.Fatal("Error in StdoutPipe():", err);
+    return
+  }
+  outBuf := bufio.NewReader(outPipe)
+
+  command.Stderr = os.Stderr
+
+  err = command.Start()
+  if err != nil {
+    c.log.Fatal("Error in Cmd.start:", err);
+  }
+
+  noMatch := false
+  match := false
+  for {
+		str, err := outBuf.ReadString('\n')
+		if err != nil {
+      if err == io.EOF {
+        break
+      }
+			c.log.Fatal("Error reading line:", err);
+		}
+		
+    if strings.HasPrefix(str, "No match for") {
+      noMatch = true
+    }
+
+    if strings.HasPrefix(str, "   Domain Name:") {
+      match = true
+    }
+
+	}
+
+  if (noMatch != match) {
+    c.sendWhoisResult(domain, match)    
+  } else {
+    c.log.Println("Unrecognized result from whois.");
+    // TODO: log this confusing result from whois
+  }
+}
+
+func (c *connection) sendWhoisResult(domain string, exists bool) {
+  var existsString string
+  if exists {
+    existsString = "1"
+  } else {
+    existsString = "0"
+  }
+
+  str := "r" + domain + "," + existsString
+  c.log.Println("Sending to websocket:", str)
+  err := websocket.Message.Send(c.ws, str)
+  if err != nil {
+    if !c.Closed {
+      c.log.Println("Error sending to websocket:", err)
+    }
+  }
+}
+
 
 func firstProtocol(req *http.Request) string {
   protocols := req.Header["Sec-Websocket-Protocol"]
