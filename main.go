@@ -74,5 +74,6 @@ func main() {
   }
 
   connInit()
+  whoisInit()
   run()
 }

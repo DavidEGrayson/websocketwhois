@@ -4,12 +4,12 @@ package main
 
 import (
   "code.google.com/p/go.net/websocket"
-  "os/exec"
+  //"os/exec"
   "log"
   "fmt"
   "net"
   "io"
-  "bufio"
+  //"bufio"
   "os"
   "net/http"
   "reflect"
@@ -24,6 +24,7 @@ type connection struct {
   log log.Logger
 
   closeRequest chan bool
+  whoisResults chan whoisResult
   Closed bool
 }
 
@@ -69,12 +70,11 @@ func (c *connection) websocketToProcess() {
       }
       return
     }
-    c.log.Println("From websocket:", message)
+
     if strings.HasPrefix(message, "w") {
       domainFragment := strings.ToLower(message[1:])
       c.whoisRequest(domainFragment)
     }
-		c.log.Println("Done handling that request")
 
   }
 }
@@ -84,70 +84,34 @@ func (c *connection) whoisRequest(domainFragment string) {
 
 	domain := domainFragment + ".com" // TODO: this needs a lot of work
 
-	command := exec.Command("whois", "-H", domain)
-  var err error
+  var request whoisRequest
+  request.Domain = domain
+  request.ResultChannel = c.whoisResults
+  whoisRequestChannel <- request
+}
 
-  outPipe, err := command.StdoutPipe()
-  if err != nil {
-    c.log.Fatal("Error in StdoutPipe():", err);
-    return
-  }
-  outBuf := bufio.NewReader(outPipe)
+func (c *connection) websocketWrite() {
+  for result := range c.whoisResults {
+    c.log.Println("Result: ", result.WhoisRequest.Domain, result.Exists);
 
-  command.Stderr = os.Stderr
-
-  err = command.Start()
-  if err != nil {
-    c.log.Fatal("Error in Cmd.start:", err);
-  }
-
-  noMatch := false
-  match := false
-  for {
-		str, err := outBuf.ReadString('\n')
-		if err != nil {
-      if err == io.EOF {
-        break
-      }
-			c.log.Fatal("Error reading line:", err);
+		var existsString string
+		if result.Exists {
+			existsString = "1"
+		} else {
+			existsString = "0"
 		}
-		
-    if strings.HasPrefix(str, "No match for") {
-      noMatch = true
-    }
 
-    if strings.HasPrefix(str, "   Domain Name:") {
-      match = true
-    }
-
-	}
-
-  if (noMatch != match) {
-    c.sendWhoisResult(domain, match)    
-  } else {
-    c.log.Println("Unrecognized result from whois.");
-    // TODO: log this confusing result from whois
+		str := "r" + result.WhoisRequest.Domain + "," + existsString
+		//log.Println("Sending to websocket:", str)
+		err := websocket.Message.Send(c.ws, str)
+		if err != nil {
+			if !c.Closed {
+				log.Println("Error sending to websocket:", err)
+			}
+		}
+    
   }
 }
-
-func (c *connection) sendWhoisResult(domain string, exists bool) {
-  var existsString string
-  if exists {
-    existsString = "1"
-  } else {
-    existsString = "0"
-  }
-
-  str := "r" + domain + "," + existsString
-  c.log.Println("Sending to websocket:", str)
-  err := websocket.Message.Send(c.ws, str)
-  if err != nil {
-    if !c.Closed {
-      c.log.Println("Error sending to websocket:", err)
-    }
-  }
-}
-
 
 func firstProtocol(req *http.Request) string {
   protocols := req.Header["Sec-Websocket-Protocol"]
@@ -166,8 +130,11 @@ func (c *connection) run() {
   // call Close() at nearly the same time.  Is there a better way?
   c.closeRequest = make(chan bool, 10)
 
+  c.whoisResults = make(chan whoisResult, 100)  
+
   //go c.processToWebsocket()
   go c.websocketToProcess()
+  go c.websocketWrite()
   
   <-c.closeRequest
   c.cleanup()
