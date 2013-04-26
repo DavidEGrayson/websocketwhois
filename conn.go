@@ -11,7 +11,7 @@ import (
   "io"
   //"bufio"
   "os"
-  "net/http"
+  //"net/http"
   "reflect"
   "syscall"
   "strings"
@@ -24,7 +24,7 @@ type connection struct {
   log log.Logger
 
   closeRequest chan bool
-  whoisResults chan whoisResult
+  whoisRequests chan string
   Closed bool
 }
 
@@ -56,7 +56,7 @@ func websocketClosedLocally(err error) bool {
   return false
 }
 
-func (c *connection) websocketToProcess() {
+func (c *connection) receive() {
   defer c.Close()
   for {
     var message string
@@ -73,52 +73,34 @@ func (c *connection) websocketToProcess() {
 
     if strings.HasPrefix(message, "w") {
       domainFragment := strings.ToLower(message[1:])
-      c.whoisRequest(domainFragment)
+      c.whoisRequests <- domainFragment + ".com"
     }
 
   }
 }
 
-func (c *connection) whoisRequest(domainFragment string) {
-  c.log.Println("Whois request:", domainFragment)
+func (c *connection) work() {
+  defer c.Close()
+  for domain := range c.whoisRequests {
+    exists := whoisDomainExists(domain)
 
-	domain := domainFragment + ".com" // TODO: this needs a lot of work
-
-  var request whoisRequest
-  request.Domain = domain
-  request.ResultChannel = c.whoisResults
-  whoisRequestChannel <- request
-}
-
-func (c *connection) websocketWrite() {
-  for result := range c.whoisResults {
-    c.log.Println("Result: ", result.WhoisRequest.Domain, result.Exists);
-
+    c.log.Println("Result: ", domain, exists);
 		var existsString string
-		if result.Exists {
+		if exists {
 			existsString = "1"
 		} else {
 			existsString = "0"
 		}
 
-		str := "r" + result.WhoisRequest.Domain + "," + existsString
+		str := "r" + domain + "," + existsString
 		//log.Println("Sending to websocket:", str)
 		err := websocket.Message.Send(c.ws, str)
 		if err != nil {
 			if !c.Closed {
 				log.Println("Error sending to websocket:", err)
 			}
-		}
-    
+		}    
   }
-}
-
-func firstProtocol(req *http.Request) string {
-  protocols := req.Header["Sec-Websocket-Protocol"]
-  if len(protocols) >= 1 {
-    return protocols[0]
-  }
-  return ""
 }
 
 func (c *connection) run() {
@@ -130,12 +112,13 @@ func (c *connection) run() {
   // call Close() at nearly the same time.  Is there a better way?
   c.closeRequest = make(chan bool, 10)
 
-  c.whoisResults = make(chan whoisResult, 100)  
+  c.whoisRequests = make(chan string, 20)
 
-  //go c.processToWebsocket()
-  go c.websocketToProcess()
-  go c.websocketWrite()
-  
+  go c.receive()
+  for i := 0; i < 20; i++ {
+    go c.work()
+  }
+
   <-c.closeRequest
   c.cleanup()
 }
