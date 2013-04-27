@@ -71,11 +71,20 @@ func (c *connection) receive() {
       return
     }
 
-    if strings.HasPrefix(message, "w") {
-      domainFragment := strings.ToLower(message[1:])
-      c.whoisRequests <- domainFragment + ".com"
-    }
+    requestType, requestData := message[0:1], strings.ToLower(message[1:])
+		switch requestType {
+		case "w": // Whois query for one specific domain name.
+      c.whoisRequests <- requestData
+    case "g": // g: General query asking "what can I do to get a name like this"
+      // These are the TLDs that it is OK to add.
+      // TODO: make this list come from the request
+			tlds := []string{"com", "net", "org"}
+			for _, tld := range tlds {
+				c.whoisRequests <- requestData + "." + tld
+			}
 
+      // TODO: if the fragment happens to end in a TLD, suggest that
+    }
   }
 }
 

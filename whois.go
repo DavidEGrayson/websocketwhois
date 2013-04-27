@@ -12,7 +12,6 @@ import (
   "bufio"
   "strings"
   "log"
-  "time"
 )
 
 var whoisConcurrencyLimiter chan bool
@@ -26,7 +25,6 @@ func whoisLimitRelease() {
 }
 
 func whoisDomainExists(domain string) bool {
-  time.Sleep(10 * time.Second)
   whoisLimitAcquire()
   defer whoisLimitRelease()
 
