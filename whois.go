@@ -1,9 +1,18 @@
 package main
 
-// TODO: better handling of concurrency.  We don't want our 100 goroutines
-// handling the whois requests to be slowed down by having to wait around
-// for the websockets to accept their data, and that could be a way that
-// someone brings down the system
+// PIR.org limits us:
+// http://www.dnforum.com/f17/pir-limits-org-whois-thread-110375.html
+
+// TODO: sign up for direct access to their zone files to get around it?
+//   http://pir.org/help/access
+
+// TODO: another option for zone files: http://www.premiumdrops.com/zones.html
+
+// Other whois sites:
+// http://www.betterwhois.com/
+// http://whois.domaintools.com/
+// http://www.snapcheck.com/ ?
+
 
 import (
   "io"
@@ -12,6 +21,7 @@ import (
   "bufio"
   "strings"
   "log"
+	"errors"
 )
 
 var whoisConcurrencyLimiter chan bool
@@ -24,26 +34,31 @@ func whoisLimitRelease() {
   whoisConcurrencyLimiter <- true
 }
 
-func whoisDomainExists(domain string) bool {
-  whoisLimitAcquire()
-  defer whoisLimitRelease()
+func whoisDomainExists(domain string) (bool, error) {
+
+  wlog := *log.New(os.Stdout, "whois " + domain + " ", log.Flags())
 
 	command := exec.Command("whois", "-H", domain)
 	var err error
 
 	outPipe, err := command.StdoutPipe()
 	if err != nil {
-		log.Fatal("Error in StdoutPipe():", err);
-		return false   // TODO: return an error
+		wlog.Println("Error in StdoutPipe():", err);
+		return false, err
 	}
 	outBuf := bufio.NewReader(outPipe)
 
 	command.Stderr = os.Stderr
 
+  whoisLimitAcquire()
+  defer whoisLimitRelease()
+
 	err = command.Start()
 	if err != nil {
-		log.Fatal("Error in Cmd.start:", err);
+		wlog.Println("Error in Cmd.start:", err);
+    return false, err
 	}
+	wlog.Println("Started")
 
 	noMatch := false
 	match := false
@@ -53,7 +68,8 @@ func whoisDomainExists(domain string) bool {
 			if err == io.EOF {
 				break
 			}
-			log.Fatal("Error reading line:", err);
+			wlog.Println("Error reading line:", err);
+      return false, err
 		}
 		
 		if strings.HasPrefix(str, "No match for") {
@@ -64,20 +80,31 @@ func whoisDomainExists(domain string) bool {
 			match = true
 		}
 
+		// This is what we get for pololu.org
+		if str == "NOT FOUND\n" {
+			noMatch = true
+		}
+
+		// This is what we got for foobarcrumbles.org
+		if strings.HasPrefix(str, "No Match") {
+			noMatch = true
+		}
+
+
 	}
 
 	if (noMatch == match) {
-		log.Println("Unrecognized result from whois.");
+		wlog.Println("Unrecognized result.");
 		// TODO: log this confusing result from whois
     // TODO: don't lie to the user; need to return an err from this
-    return false;
-	}  
+    return false, errors.New("Unrecognized result.");
+	}
 
-  return match;
+  return match, nil;
 }
 
 func whoisInit() {
-  whoisConcurrencyLimiter = make(chan bool, 2000)
+  whoisConcurrencyLimiter = make(chan bool, 100)
   for i := 0; i < cap(whoisConcurrencyLimiter); i++ {
     whoisConcurrencyLimiter <- true
   }

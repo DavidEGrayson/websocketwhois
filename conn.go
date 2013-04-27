@@ -78,7 +78,7 @@ func (c *connection) receive() {
     case "g": // g: General query asking "what can I do to get a name like this"
       // These are the TLDs that it is OK to add.
       // TODO: make this list come from the request
-			tlds := []string{"com", "net", "org"}
+			tlds := []string{"com", "net"}
 			for _, tld := range tlds {
 				c.whoisRequests <- requestData + "." + tld
 			}
@@ -89,25 +89,24 @@ func (c *connection) receive() {
 }
 
 func (c *connection) work() {
-  defer c.Close()
   for domain := range c.whoisRequests {
-    exists := whoisDomainExists(domain)
+    exists, err := whoisDomainExists(domain)
 
-    c.log.Println("Result: ", domain, exists);
-		var existsString string
-		if exists {
-			existsString = "1"
+    c.log.Println("Result: ", domain, exists, err);
+		var resultString string
+		if err != nil {
+			resultString = "e"  // There was an error.
+		} else if exists {
+			resultString = "1"  // The domain exists; it is taken.
 		} else {
-			existsString = "0"
+			resultString = "0"  // The domain does not exist.
 		}
 
-		str := "r" + domain + "," + existsString
+		str := "r" + domain + "," + resultString
 		//log.Println("Sending to websocket:", str)
-		err := websocket.Message.Send(c.ws, str)
-		if err != nil {
-			if !c.Closed {
-				log.Println("Error sending to websocket:", err)
-			}
+		err = websocket.Message.Send(c.ws, str)
+		if err != nil && !c.Closed {
+			log.Println("Error sending to websocket:", err)
 		}    
   }
 }
@@ -140,6 +139,7 @@ func (c *connection) Close() {
 func (c *connection) cleanup() {
   c.Closed = true
   c.ws.Close()
+	close(c.whoisRequests)
   c.log.Println("Connection cleaned up.")
 }
 

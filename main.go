@@ -10,6 +10,8 @@ import (
   "strings"
   "fmt"
   "os"
+  "runtime"
+	"time"
 )
 
 // Commandline arguments
@@ -64,6 +66,13 @@ func run() {
     log.Fatal("Error in ListenAndServe:", err)
   }
   log.Printf("Serving ending?");
+}
+
+func monitorStatus() {
+	for {
+		time.Sleep(1 * time.Second)
+		fmt.Println("Status: GoRoutines: ", runtime.NumGoroutine())
+	}
 }
 
 func main() {
