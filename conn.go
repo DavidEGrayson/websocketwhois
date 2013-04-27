@@ -23,9 +23,7 @@ type connection struct {
   Id int
   log log.Logger
 
-  closeRequest chan bool
   whoisRequests chan string
-  Closed bool
 }
 
 var idChannel chan int = make(chan int)
@@ -57,13 +55,11 @@ func websocketClosedLocally(err error) bool {
 }
 
 func (c *connection) receive() {
-  defer c.Close()
   for {
     var message string
     err := websocket.Message.Receive(c.ws, &message)
     if err != nil {
       switch {
-        case c.Closed: // Suppress error message
         case websocketClosedLocally(err): c.log.Println("Websocket closed locally.")
         case err == io.EOF: c.log.Println("Websocket closed remotely.")
         default: c.log.Println("Error reading from websocket:", err, reflect.TypeOf(err))
@@ -105,7 +101,7 @@ func (c *connection) work() {
     str := "r" + domain + "," + resultString
     //log.Println("Sending to websocket:", str)
     err = websocket.Message.Send(c.ws, str)
-    if err != nil && !c.Closed {
+    if err != nil {
       log.Println("Error sending to websocket:", err)
     }    
   }
@@ -116,28 +112,17 @@ func (c *connection) run() {
   c.log = *log.New(os.Stdout, fmt.Sprintf("#%d ", c.Id), log.Flags())
   c.log.Println("New connection from " + c.ws.Request().RemoteAddr + ".")
 
-  // closeRequest must be buffered in case multiple goroutines
-  // call Close() at nearly the same time.  Is there a better way?
-  c.closeRequest = make(chan bool, 10)
-
   c.whoisRequests = make(chan string, 20)
 
-  go c.receive()
   for i := 0; i < 20; i++ {
     go c.work()
   }
 
-  <-c.closeRequest
+  c.receive()
   c.cleanup()
 }
 
-func (c *connection) Close() {
-  c.log.Println("Sending request to close.")
-  c.closeRequest <- true
-}
-
 func (c *connection) cleanup() {
-  c.Closed = true
   c.ws.Close()
   close(c.whoisRequests)
   c.log.Println("Connection cleaned up.")
