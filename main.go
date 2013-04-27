@@ -11,7 +11,7 @@ import (
   "fmt"
   "os"
   "runtime"
-	"time"
+  "time"
 )
 
 // Commandline arguments
@@ -30,7 +30,7 @@ func homeHandler(conn http.ResponseWriter, request *http.Request) {
       http.FileServer(http.Dir(*webDirName)).ServeHTTP(conn, request)
     }
   } else {
-		http.NotFound(conn, request)
+    http.NotFound(conn, request)
   }
 }
 
@@ -69,10 +69,10 @@ func run() {
 }
 
 func monitorStatus() {
-	for {
-		time.Sleep(1 * time.Second)
-		fmt.Println("Status: GoRoutines: ", runtime.NumGoroutine())
-	}
+  for {
+    time.Sleep(1 * time.Second)
+    fmt.Println("Status: GoRoutines: ", runtime.NumGoroutine())
+  }
 }
 
 func main() {

@@ -17,11 +17,11 @@ package main
 import (
   "io"
   "os"
-	"os/exec"
+  "os/exec"
   "bufio"
   "strings"
   "log"
-	"errors"
+  "errors"
 )
 
 var whoisConcurrencyLimiter chan bool
@@ -38,67 +38,67 @@ func whoisDomainExists(domain string) (bool, error) {
 
   wlog := *log.New(os.Stdout, "whois " + domain + " ", log.Flags())
 
-	command := exec.Command("whois", "-H", domain)
-	var err error
+  command := exec.Command("whois", "-H", domain)
+  var err error
 
-	outPipe, err := command.StdoutPipe()
-	if err != nil {
-		wlog.Println("Error in StdoutPipe():", err);
-		return false, err
-	}
-	outBuf := bufio.NewReader(outPipe)
+  outPipe, err := command.StdoutPipe()
+  if err != nil {
+    wlog.Println("Error in StdoutPipe():", err);
+    return false, err
+  }
+  outBuf := bufio.NewReader(outPipe)
 
-	command.Stderr = os.Stderr
+  command.Stderr = os.Stderr
 
   whoisLimitAcquire()
   defer whoisLimitRelease()
 
-	err = command.Start()
-	if err != nil {
-		wlog.Println("Error in Cmd.start:", err);
+  err = command.Start()
+  if err != nil {
+    wlog.Println("Error in Cmd.start:", err);
     return false, err
-	}
-	wlog.Println("Started")
+  }
+  wlog.Println("Started")
 
-	noMatch := false
-	match := false
-	for {
-		str, err := outBuf.ReadString('\n')
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			wlog.Println("Error reading line:", err);
+  noMatch := false
+  match := false
+  for {
+    str, err := outBuf.ReadString('\n')
+    if err != nil {
+      if err == io.EOF {
+        break
+      }
+      wlog.Println("Error reading line:", err);
       return false, err
-		}
-		
-		if strings.HasPrefix(str, "No match for") {
-			noMatch = true
-		}
+    }
+    
+    if strings.HasPrefix(str, "No match for") {
+      noMatch = true
+    }
 
-		if strings.HasPrefix(str, "   Domain Name:") {
-			match = true
-		}
+    if strings.HasPrefix(str, "   Domain Name:") {
+      match = true
+    }
 
-		// This is what we get for pololu.org
-		if str == "NOT FOUND\n" {
-			noMatch = true
-		}
+    // This is what we get for pololu.org
+    if str == "NOT FOUND\n" {
+      noMatch = true
+    }
 
-		// This is what we got for foobarcrumbles.org
-		if strings.HasPrefix(str, "No Match") {
-			noMatch = true
-		}
+    // This is what we got for foobarcrumbles.org
+    if strings.HasPrefix(str, "No Match") {
+      noMatch = true
+    }
 
 
-	}
+  }
 
-	if (noMatch == match) {
-		wlog.Println("Unrecognized result.");
-		// TODO: log this confusing result from whois
+  if (noMatch == match) {
+    wlog.Println("Unrecognized result.");
+    // TODO: log this confusing result from whois
     // TODO: don't lie to the user; need to return an err from this
     return false, errors.New("Unrecognized result.");
-	}
+  }
 
   return match, nil;
 }
