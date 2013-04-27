@@ -12,5 +12,5 @@ clean:
 	go clean
 	rm -f test_output.txt
 
-demo: build
-	./websocketwhois  --dir=test_www
+run: build
+	./websocketwhois --dir=www
