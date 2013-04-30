@@ -18,11 +18,11 @@ body {
   padding-right: 1em;
 }
 
-label[for=userinput] {
+label[for=user-input] {
   display: block;
 }
 
-#userinput {
+#user-input {
   font-size: 300%;
   width: 100%;
   padding: 0 0.2em 0 0.2em;
