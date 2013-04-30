@@ -1,0 +1,2 @@
+pacman -S go
+sudo go get code.google.com/p/go.net/websocket

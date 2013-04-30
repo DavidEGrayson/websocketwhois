@@ -61,7 +61,7 @@ func parseArgs() bool {
 }
 
 func run() {
-  log.Printf("wsc server starting on %s.\n", *addr)
+  log.Printf("server starting on %s.\n", *addr)
   if err := http.ListenAndServe(*addr, http.HandlerFunc(homeHandler)); err != nil {
     log.Fatal("Error in ListenAndServe:", err)
   }
