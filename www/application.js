@@ -1,3 +1,7 @@
+// TODO: Favorites list using HTML5 storage
+
+// Useful: http://matthewlein.com/experiments/easing.html
+
 $(function() {
   var user_input = $("#user-input");
   var tldsOfInterest = ["com", "net"];
@@ -17,7 +21,7 @@ $(function() {
 
   user_input.keyup(keyUpCallback = function() {
     var input_string = user_input.val().toLowerCase();
-    if (!input_string.match(/^[a-z.]*$/)) {
+    if (!input_string.match(/^[a-z-.0-9]*$/)) {
       userInputInvalid = true;
       domainNames = []
       // TODO: indicate that the input was invalid
@@ -48,7 +52,18 @@ $(function() {
     }
     else {
       console.log("User interested in: " + domainNames);
-    }        
+    }
+  });
+
+  userInputChangeCallbacks.add(function() {
+    if (userInputInvalid)
+    {
+      $("#userInputInvalidMessage").slideDown(500);
+    }
+    else
+    {
+      $("#userInputInvalidMessage").slideUp(200);
+    }
   });
 
   userInputChangeCallbacks.add(function() {
@@ -105,20 +120,20 @@ $(function() {
   });
 
   // Uncomment the code below to make it easier to debug certain things.
-  //window.setTimeout(function() {
-  //  $("#user-input").val("davidegrayson");
-  //  keyUpCallback();
-  //}, 500);
-
   window.setTimeout(function() {
-    domainResults = [
-      {name: "davidegrayson.com", state: "taken"},
-      {name: "davidegrayson.net", state: "available"},
-      {name: "davidegrayson.org", state: "pending"},
-      {name: "davidegrayson.info", state: "error"}
-    ]
-    domainResultsChangeCallbacks.fire();
-  }, 50);
+    $("#user-input").val("davidegrayson*");
+    keyUpCallback();
+  }, 500);
+
+  //window.setTimeout(function() {
+  //  domainResults = [
+  //    {name: "davidegrayson.com", state: "taken"},
+  //    {name: "davidegrayson.net", state: "available"},
+  //    {name: "davidegrayson.org", state: "pending"},
+  //    {name: "davidegrayson.info", state: "error"}
+  //  ]
+  //  domainResultsChangeCallbacks.fire();
+  //}, 50);
 
 });
 

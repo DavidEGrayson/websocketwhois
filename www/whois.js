@@ -1,3 +1,5 @@
+// TODO: take care of reconnecting if the websocket gets closed somehow
+
 $(whois = function() {
   var conn;
   var domains = {};
