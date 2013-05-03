@@ -84,7 +84,7 @@ $(function() {
       switch(domainResult.state)
       {
       case "pending":
-        firstParagraph.appendChild(document.createTextNode("..."));
+        firstParagraph.appendChild(document.createTextNode("…"));
         break;
       case "available":
         firstParagraph.appendChild(document.createTextNode(" is available!"));
