@@ -44,6 +44,11 @@ label[for=user-input] {
 
 .result p:first-child {
   margin-top: 0;
+  font-size: 120%;
+}
+
+.result .animatedEllipsis {
+  font-weight: bold;
 }
 
 .result .name {
@@ -65,4 +70,17 @@ label[for=user-input] {
 
 .taken {
   background-color: red;
+}
+
+.animatedEllipsis span {
+  -webkit-animation: dot 1.3s infinite;
+}
+.animatedEllipsis :nth-child(1) { -webkit-animation-delay: 1.0s; }
+.animatedEllipsis :nth-child(2) { -webkit-animation-delay: 1.2s; }
+.animatedEllipsis :nth-child(3) { -webkit-animation-delay: 1.4s; }
+
+@-webkit-keyframes dot {
+    0% { opacity: 0; }
+   50% { opacity: 0; }
+  100% { opacity: 1; }
 }

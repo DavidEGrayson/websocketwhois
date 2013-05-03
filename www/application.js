@@ -84,7 +84,8 @@ $(function() {
       switch(domainResult.state)
       {
       case "pending":
-        firstParagraph.appendChild(document.createTextNode("…"));
+        firstParagraph.innerHTML += "<span class='animatedEllipsis'>" +
+          "<span>.</span><span>.</span><span>.</span></span>";
         break;
       case "available":
         firstParagraph.appendChild(document.createTextNode(" is available!"));
