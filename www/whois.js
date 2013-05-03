@@ -26,11 +26,11 @@ $(whois = function() {
     whois.conn = conn;
 
     conn.onclose = function(evt) {
-      console.log("Connection closed.");
+      //console.log("Connection closed.");
     }
 
     conn.onmessage = function(evt) {
-      console.log("Received message: " + evt.data);
+      //console.log("Received message: " + evt.data);
       if (evt.data[0] == "r") {
         // A whois result was received.
         var parts = evt.data.substr(1).split(",");

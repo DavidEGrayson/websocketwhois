@@ -47,15 +47,6 @@ $(function() {
   });
 
   userInputChangeCallbacks.add(function() {
-    if (userInputInvalid) {
-      console.log("User input invalid.");
-    }
-    else {
-      console.log("User interested in: " + domainNames);
-    }
-  });
-
-  userInputChangeCallbacks.add(function() {
     if (userInputInvalid)
     {
       $("#userInputInvalidMessage").slideDown(500);
@@ -79,7 +70,7 @@ $(function() {
   });
 
   domainResultsChangeCallbacks.add(function() {
-    console.log(domainResults.join(", "));
+    //console.log(domainResults.join(", "));
 
     // Naive re-rendering of everything even if it didn't change.
     var resultArea = document.createElement("div");
@@ -138,5 +129,9 @@ $(function() {
   // domainResultsChangeCallbacks.fire();
   //}, 50);
 
+  // Just in case the user clicked back and there is stuff left in the box.
+  window.setTimeout(function() {
+    keyUpCallback();
+  }, 100);
 });
 
