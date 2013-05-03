@@ -128,15 +128,15 @@ $(function() {
   //  keyUpCallback();
   //}, 500);
 
-  window.setTimeout(function() {
-   domainResults = [
-     {name: "davidegrayson.com", state: "taken"},
-     {name: "davidegrayson.net", state: "available"},
-     {name: "davidegrayson.org", state: "pending"},
-     {name: "davidegrayson.info", state: "error"}
-   ]
-   domainResultsChangeCallbacks.fire();
-  }, 50);
+  //window.setTimeout(function() {
+  // domainResults = [
+  //   {name: "davidegrayson.com", state: "taken"},
+  //   {name: "davidegrayson.net", state: "available"},
+  //   {name: "davidegrayson.org", state: "pending"},
+  //   {name: "davidegrayson.info", state: "error"}
+  // ]
+  // domainResultsChangeCallbacks.fire();
+  //}, 50);
 
 });
 
