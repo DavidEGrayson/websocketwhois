@@ -47,7 +47,8 @@ label[for=user-input] {
 }
 
 .result {
-  width: 15em;
+  min-width: 15em;
+  max-width: 20em;
   height: 15em;
   padding: 0.5em;
   float: left;
@@ -77,11 +78,11 @@ label[for=user-input] {
 }
 
 .available {
-  background-color : green;
+  background-color: #828d02;
 }
 
 .taken {
-  background-color: red;
+  background-color: #d0626f;
 }
 
 .animatedEllipsis span {

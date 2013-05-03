@@ -107,10 +107,13 @@ $(function() {
         break;
       case "taken":
         firstParagraph.appendChild(document.createTextNode(" is taken."));
+        var goToWebsite = document.createElement("a");
+        goToWebsite.href = "http://" + domainResult.name
+        goToWebsite.appendChild(document.createTextNode("Go to website"));
+        resultNode.appendChild(goToWebsite);
         break;
       case "error":
         firstParagraph.appendChild(document.createTextNode(" is unknown because there was an error!"));
-        
         break;
       }
       resultArea.appendChild(resultNode);
@@ -120,20 +123,20 @@ $(function() {
   });
 
   // Uncomment the code below to make it easier to debug certain things.
-  window.setTimeout(function() {
-    $("#user-input").val("davidegrayson*");
-    keyUpCallback();
-  }, 500);
-
   //window.setTimeout(function() {
-  //  domainResults = [
-  //    {name: "davidegrayson.com", state: "taken"},
-  //    {name: "davidegrayson.net", state: "available"},
-  //    {name: "davidegrayson.org", state: "pending"},
-  //    {name: "davidegrayson.info", state: "error"}
-  //  ]
-  //  domainResultsChangeCallbacks.fire();
-  //}, 50);
+  //  $("#user-input").val("davidegrayson*");
+  //  keyUpCallback();
+  //}, 500);
+
+  window.setTimeout(function() {
+    domainResults = [
+      {name: "davidegrayson.com", state: "taken"},
+      {name: "davidegrayson.net", state: "available"},
+      {name: "davidegrayson.org", state: "pending"},
+      {name: "davidegrayson.info", state: "error"}
+    ]
+    domainResultsChangeCallbacks.fire();
+  }, 50);
 
 });
 
