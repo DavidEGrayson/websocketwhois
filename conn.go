@@ -91,11 +91,11 @@ func (c *connection) work() {
     c.log.Println("Result: ", domain, exists, err);
     var resultString string
     if err != nil {
-      resultString = "e"  // There was an error.
+      resultString = "e"  // Error
     } else if exists {
-      resultString = "1"  // The domain exists; it is taken.
+      resultString = "t"  // Taken
     } else {
-      resultString = "0"  // The domain does not exist.
+      resultString = "a"  // Available
     }
 
     str := "r" + domain + "," + resultString

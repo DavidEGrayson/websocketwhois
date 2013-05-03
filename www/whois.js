@@ -1,7 +1,7 @@
 $(whois = function() {
   var conn;
   var domains = {};
-  var results = {"0":"doesNotExist", "1":"exists"}
+  var results = {"a":"available", "t":"taken", "e":"error"}
 
   whois.resultCallbacks = $.Callbacks();
 
