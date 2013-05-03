@@ -63,6 +63,13 @@ $(function() {
 
   domainResultsChangeCallbacks.add(function() {
     console.log(domainResults.join(", "));
+
+    // Naive re-rendering of everything even if it didn't change.
+    var resultArea = document.createElement("div");
+    resultArea.id = "result-area";
+    resultArea.appendChild(document.createTextNode(domainResults.join(", ")));
+    // $("<div id='result-area'/>");
+    $("#result-area").replaceWith(resultArea);
   });
 
 });

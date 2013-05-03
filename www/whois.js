@@ -45,12 +45,9 @@ $(whois = function() {
 
   whois.domain = function(domainName) {
     var domain = domains[domainName];
- 
-    if (!domain) {
-      //domains[domainName] = domain = { name: domainName, status: null };
+     if (!domain) {
       domains[domainName] = domain = new whois.Domain(domainName);
-
-      console.log("Requesting " + domainName);
+      //console.log("Requesting " + domainName);
       conn.send("w" + domainName);
     }
     return domain;
