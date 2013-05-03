@@ -4,6 +4,7 @@ $(function() {
   var tldsOfInterest = ["com", "net"];
   var userInputInvalid = false;
   var domainsOfInterest = [];
+  var userInputChangeCallbacks = $.Callbacks();
 
   if (!window["WebSocket"]) {
     alert("Sorry, your browser does not support websockets.  Try Google Chrome!");
@@ -11,9 +12,11 @@ $(function() {
     return;
   }
 
+  //whois.init();
+
   user_input.keyup(function() {
     var input_string = user_input.val().toLowerCase();
-    if (!input_string.match(/[a-z.]+/)) {
+    if (!input_string.match(/[a-z.]*/)) {
       userInputInvalid = true;
     }
     else {
@@ -32,15 +35,29 @@ $(function() {
         domainsOfInterest = [parts[parts.length-2] + "." + parts[parts.length-1]]; 
       }
     }
-    console.log("invalid: " + userInputInvalid + ", domains: " + domainsOfInterest);
+
+    userInputChangeCallbacks.fire();
+  });
+
+  userInputChangeCallbacks.add(function() {
+    if (userInputInvalid) {
+      console.log("User input invalid.");
+    }
+    else {
+      console.log("User interested in: " + domainsOfInterest);
+    }        
+  });
+
+  userInputChangeCallbacks.add(function() {
+    
   });
 
   conn = new WebSocket("ws://" + window.location.hostname + ":" + window.location.port + "/ws");
   conn.onclose = function(evt) {
-    appendLog($("<div><b>Connection closed.</b></div>"))
+    console.log("Connection closed.");
   }
   conn.onmessage = function(evt) {
-    appendLog($("<div/>").text(evt.data))
+    appendLog("Received message: " + evt.data);
   }
 
 });
