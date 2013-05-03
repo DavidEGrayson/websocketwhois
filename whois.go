@@ -8,6 +8,8 @@ package main
 
 // TODO: another option for zone files: http://www.premiumdrops.com/zones.html
 
+// TODO: for taken domains, display if there is a GoDaddy.com auction
+
 // Other whois sites:
 // http://www.betterwhois.com/
 // http://whois.domaintools.com/
@@ -90,8 +92,9 @@ func whoisDomainExists(domain string) (bool, error) {
       noMatch = true
     }
 
-
   }
+
+  command.Wait();   // Clean up the defunct process.
 
   if (noMatch == match) {
     wlog.Println("Unrecognized result.");

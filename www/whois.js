@@ -9,7 +9,8 @@ $(whois = function() {
 
   whois.Domain = function(name) {
     this.name = name
-    this.state = null
+    this.state = "pending"
+    // TODO: use prototypes correctly; I shouldn't have to define this func dynamically
     this.toString = function() {
       return this.name + ":" + this.state;
     }
@@ -17,6 +18,9 @@ $(whois = function() {
 
   whois.init = function() {
     conn = new WebSocket("ws://" + window.location.hostname + ":" + window.location.port + "/");
+    // TODO: do something to prevent the InvalidStateError that happens if you
+    //   try to send a websocket frame when the thing is not connected
+
     whois.conn = conn;
 
     conn.onclose = function(evt) {

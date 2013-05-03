@@ -15,10 +15,12 @@ $(function() {
 
   whois.init();
 
-  user_input.keyup(function() {
+  user_input.keyup(keyUpCallback = function() {
     var input_string = user_input.val().toLowerCase();
-    if (!input_string.match(/[a-z.]*/)) {
+    if (!input_string.match(/^[a-z.]*$/)) {
       userInputInvalid = true;
+      domainNames = []
+      // TODO: indicate that the input was invalid
     }
     else {
       userInputInvalid = false;
@@ -67,10 +69,55 @@ $(function() {
     // Naive re-rendering of everything even if it didn't change.
     var resultArea = document.createElement("div");
     resultArea.id = "result-area";
-    resultArea.appendChild(document.createTextNode(domainResults.join(", ")));
+    //resultArea.appendChild(document.createTextNode(domainResults.join(", ")));
+
+    $.each(domainResults, function(index, domainResult) {
+      var resultNode = document.createElement("div");
+      resultNode.className = "result " + domainResult.state;
+      var firstParagraph = document.createElement("p");
+      var nameNode = document.createElement("span");
+      nameNode.className = "name"
+      nameNode.appendChild(document.createTextNode(domainResult.name));
+      firstParagraph.appendChild(nameNode);
+      resultNode.appendChild(firstParagraph);
+      
+      switch(domainResult.state)
+      {
+      case "pending":
+        firstParagraph.appendChild(document.createTextNode("..."));
+        break;
+      case "available":
+        firstParagraph.appendChild(document.createTextNode(" is available!"));
+        break;
+      case "taken":
+        firstParagraph.appendChild(document.createTextNode(" is taken."));
+        break;
+      case "error":
+        firstParagraph.appendChild(document.createTextNode(" is unknown because there was an error!"));
+        
+        break;
+      }
+      resultArea.appendChild(resultNode);
+    });
     // $("<div id='result-area'/>");
     $("#result-area").replaceWith(resultArea);
   });
+
+  // Uncomment the code below to make it easier to debug certain things.
+  //window.setTimeout(function() {
+  //  $("#user-input").val("davidegrayson");
+  //  keyUpCallback();
+  //}, 500);
+
+  window.setTimeout(function() {
+    domainResults = [
+      {name: "davidegrayson.com", state: "taken"},
+      {name: "davidegrayson.net", state: "available"},
+      {name: "davidegrayson.org", state: "pending"},
+      {name: "davidegrayson.info", state: "error"}
+    ]
+    domainResultsChangeCallbacks.fire();
+  }, 50);
 
 });
 
