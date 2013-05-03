@@ -124,18 +124,18 @@ $(function() {
 
   // Uncomment the code below to make it easier to debug certain things.
   //window.setTimeout(function() {
-  //  $("#user-input").val("davidegrayson*");
+  //  $("#user-input").val("davidegrayson");
   //  keyUpCallback();
   //}, 500);
 
   window.setTimeout(function() {
-    domainResults = [
-      {name: "davidegrayson.com", state: "taken"},
-      {name: "davidegrayson.net", state: "available"},
-      {name: "davidegrayson.org", state: "pending"},
-      {name: "davidegrayson.info", state: "error"}
-    ]
-    domainResultsChangeCallbacks.fire();
+   domainResults = [
+     {name: "davidegrayson.com", state: "taken"},
+     {name: "davidegrayson.net", state: "available"},
+     {name: "davidegrayson.org", state: "pending"},
+     {name: "davidegrayson.info", state: "error"}
+   ]
+   domainResultsChangeCallbacks.fire();
   }, 50);
 
 });
