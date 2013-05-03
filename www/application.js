@@ -1,10 +1,11 @@
 $(function() {
-  var conn;
   var user_input = $("#user-input");
   var tldsOfInterest = ["com", "net"];
   var userInputInvalid = false;
-  var domainsOfInterest = [];
+  var domainNames = [];
   var userInputChangeCallbacks = $.Callbacks();
+  var domainResults = [];
+  var domainResultsChangeCallbacks = $.Callbacks();
 
   if (!window["WebSocket"]) {
     alert("Sorry, your browser does not support websockets.  Try Google Chrome!");
@@ -12,7 +13,7 @@ $(function() {
     return;
   }
 
-  //whois.init();
+  whois.init();
 
   user_input.keyup(function() {
     var input_string = user_input.val().toLowerCase();
@@ -24,15 +25,15 @@ $(function() {
       var parts = input_string.split("\.")
       parts = $.grep(parts, function(e){ return e; })
       if (parts.length == 0) {
-        domainsOfInterest = []
+        domainNames = []
       }
       else if (parts.length == 1) {
-        domainsOfInterest = $.map(tldsOfInterest, function(tld) {
+        domainNames = $.map(tldsOfInterest, function(tld) {
           return parts[0] + "." + tld;
         });
       }
       else {
-        domainsOfInterest = [parts[parts.length-2] + "." + parts[parts.length-1]]; 
+        domainNames = [parts[parts.length-2] + "." + parts[parts.length-1]]; 
       }
     }
 
@@ -44,21 +45,25 @@ $(function() {
       console.log("User input invalid.");
     }
     else {
-      console.log("User interested in: " + domainsOfInterest);
+      console.log("User interested in: " + domainNames);
     }        
   });
 
   userInputChangeCallbacks.add(function() {
-    
+    domainResults = $.map(domainNames, function(name) {
+      return whois.domain(name);
+    });
+
+    domainResultsChangeCallbacks.fire();
   });
 
-  conn = new WebSocket("ws://" + window.location.hostname + ":" + window.location.port + "/ws");
-  conn.onclose = function(evt) {
-    console.log("Connection closed.");
-  }
-  conn.onmessage = function(evt) {
-    appendLog("Received message: " + evt.data);
-  }
+  whois.resultCallbacks.add(function(domain) {
+    domainResultsChangeCallbacks.fire();
+  });
+
+  domainResultsChangeCallbacks.add(function() {
+    console.log(domainResults.join(", "));
+  });
 
 });
 
