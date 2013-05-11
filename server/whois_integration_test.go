@@ -2,6 +2,7 @@ package main
 
 import (
   "testing"
+  "fmt"
 )
 
 func TestWhoisIntegration(test *testing.T) {
@@ -13,11 +14,12 @@ func TestWhoisIntegration(test *testing.T) {
   testExist := func(domainName string, shouldExist bool){
     exists, err := whoisDomainExists(domainName);
     if (err != nil) {
-      test.Error("%s: %s", domainName, err)
+      test.Errorf("%s: %s", domainName, err)
     } else if (exists != shouldExist) {
       test.Errorf("%s: Expected %s existence, got %s.", domainName, shouldExist, exists)
     } else {
       test.Log(domainName, "success")
+      fmt.Println("Success");
     }
     testCounter <- true
   }
@@ -29,7 +31,8 @@ func TestWhoisIntegration(test *testing.T) {
 
   goTestExist("st.com",           true);
   goTestExist("m7778aadhwQe.com", false);
-
+  goTestExist("golang.org",       true);
+  goTestExist("go489999213z.org", false);
 
   testCounter = make(chan bool)
   for i := 0; i < numTests; i++ {

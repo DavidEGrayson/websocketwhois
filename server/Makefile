@@ -13,5 +13,5 @@ clean:
 	rm -f test_output.txt
 
 run: build
-	./websocketwhois --dir=www --addr=0.0.0.0:8080
+	./websocketwhois --dir=../www --addr=0.0.0.0:8080
 
