@@ -1,0 +1,99 @@
+// Useful resources for figuring out stuff:
+//   Very brief list: http://data.iana.org/TLD/tlds-alpha-by-domain.txt
+//   Nice list:  http://www.iana.org/domains/root/db
+//   List of servers used by GNU whois:
+//     See tld_serv_list file from latest whois source code from
+//       http://ftp.debian.org/debian/pool/main/w/whois/
+
+.COM, .NET, .EDU: All in the same Whois Server Version 2.0!
+  whois.crsnic.net
+	End of useful output denoted by ">>>"-prefixed line.
+
+  `whois -H`
+    exists: prefix "Domain Name:" (line 8 or later if there is spam)
+  
+    If there is spam, it probably won't say "No match for " so we cannot
+    use that.  Just look at `whois -H google.com` and imageine if the domain
+	  name didn't exist.
+	
+  `echo SUM domain example.com | nc whois.crsnic.net`
+    exists: see the domain name in all caps on its own line in the list
+      starting on line 8
+
+  Can grab all domain names starting with a certain string.
+    `echo SUM PA domain graysonfamily | nc whois.crsnic.net 43`
+	  Limited to 50 records: "Aborting search 50 records found ....."
+    Could be used for awesome caching and reducing queries!
+    Return .NET and .COM results.
+
+
+.CN.COM
+
+.GR.COM
+
+.BR.COM
+  whois.centralnic.net.  Need to investigate more, but 
+    echo ? | nc whois.centralnic.net 43
+  returns no help!
+
+.CC, .TV, .JOBS: all in the same Whois Server Version 2.0 server!
+    whois.nic.cc
+    whois.nic.tv
+		jobswhois.verisign-grs.com
+    Run by Verisign.
+    Whois Server Version 2.0!  See .COM
+
+.COM.CC, .NET.CC, .EDU.CC, .ORG.CC
+  http://en.wikipedia.org/wiki/.cc#com.cc.2C_net.cc.2C_edu.cc.2C_org.cc
+
+
+.ORG
+  Need a zone file because public internet registry rate-limits us.
+
+.INFO
+  whois.afilias.info.    ? query returns error message nothing
+  http://info.info/index.php?q=faq/7
+	`whois -H`
+    exists: prefix "Doman Name:" (line 3)
+    not exists: entire output "NOT FOUND"
+
+  `echo domain SUM degrees.info | nc whois.afilias.info 43`
+    exists: "Domain Name:$DOMAIN"
+
+  `echo domain SUM for_.info | nc whois.afilias.info 43`
+    Gets all domains that match given thing plus one letter.
+  
+	`whois for%.info` or
+	`echo domain SUM for%.info | nc whois.afilias.info 43`
+	  Gets all domains matching that pattern.  % is only allowed right before .info.
+		Query is limited to 50 results; if it has 50 results we should just
+		assume that results are missing but there is no explicit message.
+    Entire output is "NOT FOUND" if nothing was found.
+
+
+.MOBI
+	  Same as .info except use whois.dotmobiregistry.net
+    Run by afilias.
+
+.PRO
+    Same as .INFO except use whois.registrypro.pro
+    Run by Afilias.
+
+
+.NAME
+    whois.nic.name
+		Run by Verisign.  https://whois.nic.name
+
+		Useful help message produced by:
+      echo help me dude | nc whois.nic.name 43
+
+		`echo domain david.name | nc whois.nic.name 43`
+		  Exist: "Domain Name: $DOMAIN"
+      Not exist: "No match."
+      Useful message that we should transmit to users:
+			  Not available for second level registration.
+        Third level registrations may be available on this shared name.
+
+		No prefix search!
+
+
