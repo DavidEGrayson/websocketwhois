@@ -118,3 +118,37 @@ ndf:
   UHOH, I got blacklisted from whois.aeda.net.ae after exactly 20 queries:
     BLACKLISTED: You have exceeded the query limit for your network or IP address and have been blacklisted.
 
+
+idn:
+  For queries it doesn't understand, like "?" returns a single line starting with
+    "Incorrect domain name:"
+
+  Main query: just send the domain name
+	  Available:  "Domain $domain not registred."  (preserves your capitalization)
+    Taken: Gives a bunch of details, including a line like
+      " Complete Domain Name........: a.ai"
+
+iqor:
+  Example: whois.alt.za
+  Reponse to "?" and other bad queries:
+	  "Incorrect Query or request for domain not managed by this registry."
+
+  Sometimes says one-liner "Server Error!"
+
+arnes:
+  Example: whois.arnes.si
+  
+  Main query: just send the domain name with TLD
+    Available: last paragraph is a single line:
+      "% No entries found for the selected source(s)."
+
+	  SPECIAL NOTE:
+      There are some special, unusual rules for this domain.
+      For example, one-letter domains like a.si are not allowed.
+      Must account for this in code, preferably in javascript.  Rules are listed here:
+      http://www.registry.si/how-to-register-under-si/choose-a-domain-name.html
+		  TODO: Account for these special rules on .si in the javascript.  Give good,
+        true messages to users.
+
+    Taken:
+      There will be line like "domain:                 gzg.si"

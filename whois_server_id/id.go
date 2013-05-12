@@ -149,6 +149,7 @@ func (s *serverInfo) identify() {
     s.log("Failed to get help.")
     return
   }
+  resultJoined := strings.Join(questionMarkResult, " ")
 
   switch {
 
@@ -163,6 +164,15 @@ func (s *serverInfo) identify() {
 
   case questionMarkResult.isOneLiner("out of this registry"):
     s.protocol = "ootr"
+
+  case strings.HasPrefix(resultJoined, "Incorrect domain name: "):
+    s.protocol = "idn"
+
+  case questionMarkResult.isOneLiner("Incorrect Query or request for domain not managed by this registry."):
+    s.protocol = "iqor"
+
+  case len(questionMarkResult) > 20 && questionMarkResult[1] == "% This is ARNES whois database"
+    s.protocol = "arnes"
 
   }
 
@@ -274,11 +284,15 @@ func removeUnusableServers(serverMap map[string] *serverInfo) {
     "whois.pir.org",            // .org
     "kero.yachay.pe",           // .ae
     "whois.adamsnames.tc",      // .gd .tc, .vg, 
-    "whois.aeda.net.ae",        // .ae
+    "whois.aeda.net.ae",        // .ae    
 
     // I tried but could not figure out how to get a meaningul response from these:
     "whois.ac.za",              // .ac.za
     // TODO: tell our users that the entire .ac.za list is here: http://protea.tenet.ac.za/cgi/cgi_domainquery.exe?list
+
+    // These TLDs are not available even though whois might work.
+    "whois.alt.za",
+    // TODO: tell people that .alt.za allows no new registrations according to http://www.internet.org.za/slds.html
   }
 
   for _, serverName := range weirdServers {
