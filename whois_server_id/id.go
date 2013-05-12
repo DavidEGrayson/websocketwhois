@@ -13,6 +13,7 @@ import (
   "net"
   "time"
   "sort"
+  "regexp"
   //"runtime"
   //"time"
 )
@@ -28,7 +29,29 @@ type serverInfo struct {
   suffixes []string
 }
 
+func (s *serverInfo) log(str string) {
+  fmt.Println(s.name + ": " + str)  
+}
+
 type queryResult []string
+
+func (r *queryResult) lastParagraphJoin() string {
+  lines := *r
+  paragraph := ""
+  i := len(lines) - 1
+  for ; lines[i] == ""; i -= 1 { }
+
+  for ; i >= 0; i -= 1 {
+    line := lines[i]
+    if (line == "") {
+      break
+    }
+
+    paragraph = line + " " + paragraph
+  }
+
+  return paragraph
+}
 
 // Opens a TCP connection to the remote server and sends a query.  The query consists
 // of the provided string followed by "\r\n".  Reads data back from the server and
@@ -68,6 +91,32 @@ func (s *serverInfo) query(query string) (queryResult, error) {
   return result, nil
 }
 
+// Whois Server Version 2.0
+// This is a very important protocol and the servers that use will tell you what TLDs they have.
+func (s *serverInfo) identifyWs20() {
+  // Do an invalid query just so we can see the notes at the end of the
+  // query.
+  result, err := s.query("sum domain -")
+  if err != nil {
+    s.log("Failed to get Whois Server Version 2.0 help screen.");
+    return
+  }
+
+  str := result.lastParagraphJoin()
+  str = strings.ToLower(str);
+
+  if strings.HasPrefix(str, "the registry database contains only") {
+    re := regexp.MustCompile("\\.[\\.a-z]+")
+    claimedSuffixes := re.FindAllString(str, -1)
+    s.log("Claims to support suffixes: " + strings.Join(claimedSuffixes, ", "))
+    
+    // TODO: print a warning message if we the followling line REMOVES any suffixes from s
+    s.suffixes = claimedSuffixes
+  } else {
+    s.log("The last paragraph did not talk about the registry's scope.  It was simply: " + str);
+  }
+}
+
 func (s *serverInfo) identify() {
   log := *log.New(os.Stdout, fmt.Sprintf("%s: ", s.name), log.Flags())
 
@@ -81,8 +130,11 @@ func (s *serverInfo) identify() {
   }
 
   switch {
+  case len(questionMarkResult) > 20 && questionMarkResult[1] == "Whois Server Version 2.0":
+    s.protocol = "ws20"
+    s.identifyWs20()
+
   case len(questionMarkResult) == 1 && questionMarkResult[0] == "out of this registry":
-    log.Print("Out of this registry...")
     s.protocol = "ootr"
   }
 
