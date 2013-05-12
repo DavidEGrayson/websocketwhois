@@ -58,6 +58,11 @@ func (r *queryResult) lastParagraphJoin() string {
   return paragraph
 }
 
+func (r *queryResult) isOneLiner(line string) bool {
+  lines := *r
+  return len(lines) == 1 && lines[0] == line
+}
+
 // Opens a TCP connection to the remote server and sends a query.  The query consists
 // of the provided string followed by "\r\n".  Reads data back from the server and
 // returns it as a queryResult,  which is really just a slice of strings where each
@@ -112,7 +117,7 @@ func (s *serverInfo) identifyWs20() {
   if strings.HasPrefix(str, "the registry database contains only") {
     re := regexp.MustCompile("\\.[\\.a-z]+")
     claimedSuffixes := re.FindAllString(str, -1)
-    s.log("Claims to support suffixes: " + strings.Join(claimedSuffixes, ", "))
+    //s.log("Claims to support suffixes: " + strings.Join(claimedSuffixes, ", "))
     
     // TODO: print a warning message if we the followling line REMOVES any suffixes from s
     s.suffixes = claimedSuffixes
@@ -146,17 +151,19 @@ func (s *serverInfo) identify() {
   }
 
   switch {
+
   case len(questionMarkResult) > 20 && questionMarkResult[1] == "Whois Server Version 2.0":
     s.protocol = "ws20"
     s.identifyWs20()
 
-  case len(questionMarkResult) == 1 && questionMarkResult[0] == "out of this registry":
-    s.protocol = "ootr"
-
-  case len(questionMarkResult) == 1 && questionMarkResult[0] == "Not a valid domain search pattern":
+  case questionMarkResult.isOneLiner("Not a valid domain search pattern"):
     if (s.detectAfilias()) {
       s.protocol = "afilias"
     }
+
+  case questionMarkResult.isOneLiner("out of this registry"):
+    s.protocol = "ootr"
+
   }
 
   if (s.protocol == "") {
