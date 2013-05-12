@@ -1,3 +1,6 @@
+// HMMMM, maybe we should just query DNS instead?
+//   http://stackoverflow.com/questions/12791340/strategies-to-reduce-the-whois-query-burden?rq=1
+
 // Useful resources for figuring out stuff:
 //   Very brief list: http://data.iana.org/TLD/tlds-alpha-by-domain.txt
 //   Nice list:  http://www.iana.org/domains/root/db
@@ -7,7 +10,7 @@
 
 .COM, .NET, .EDU: All in the same Whois Server Version 2.0!
   whois.crsnic.net
-	End of useful output denoted by ">>>"-prefixed line.
+  Last line of useful output is prefixed with ">>>".
 
   `whois -H`
     exists: prefix "Domain Name:" (line 8 or later if there is spam)
@@ -16,7 +19,7 @@
     use that.  Just look at `whois -H google.com` and imageine if the domain
 	  name didn't exist.
 	
-  `echo SUM domain example.com | nc whois.crsnic.net`
+  `echo SUM domain example.com | nc whois.crsnic.net 43`
     exists: see the domain name in all caps on its own line in the list
       starting on line 8
 
@@ -27,14 +30,8 @@
     Return .NET and .COM results.
 
 
-.CN.COM
-
-.GR.COM
-
-.BR.COM
-  whois.centralnic.net.  Need to investigate more, but 
-    echo ? | nc whois.centralnic.net 43
-  returns no help!
+.CN.COM, .GR.COM, .BR.COM ...
+  whois.centralnic.net.  Requires \r\n at end of commands unlike other servers!
 
 .CC, .TV, .JOBS: all in the same Whois Server Version 2.0 server!
     whois.nic.cc
