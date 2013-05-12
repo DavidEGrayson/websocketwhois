@@ -12,6 +12,7 @@ import (
   "bufio"
   "net"
   "time"
+  "sort"
   //"runtime"
   //"time"
 )
@@ -146,7 +147,23 @@ func groupByServer(suffixes []upstreamSuffixInfo) map[string] *serverInfo {
   return servers
 }
 
-func serialIdentifyAll(servers map[string] *serverInfo) {
+// In Ruby this would just be serverMap.values.sort_by(&:name).
+func sortServers(serverMap map[string] *serverInfo) []*serverInfo {
+  serverNames := make([]string, 0)
+  for name, _ := range serverMap {
+    serverNames = append(serverNames, name)
+  }
+  sort.Strings(serverNames)
+  
+  serverSlice := make([]*serverInfo, len(serverNames))
+  for i, name := range serverNames {
+    serverSlice[i] = serverMap[name]
+  }
+
+  return serverSlice
+}
+
+func serialIdentifyAll(servers []*serverInfo) {
   for _, server := range servers {
     (*server).identify()
   }
@@ -165,7 +182,7 @@ func main() {
   // they request it.  That infor is in upstreamSuffixInfos.
 
   //niceSuffixInfos := parallelMap(upstreamSuffixInfos, identifyServer)
-  serialIdentifyAll(servers)
+  serialIdentifyAll(sortServers(servers))
   
   // TODO: sort results
 
