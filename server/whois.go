@@ -24,6 +24,7 @@ import (
   "strings"
   "log"
   "errors"
+  _ "../zonefile"
 )
 
 var whoisConcurrencyLimiter chan bool
