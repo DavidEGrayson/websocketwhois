@@ -179,4 +179,13 @@ nef:
     Available: "No entries found." followed by several blank lines
     Taken: There will be a line like "Domain Name:AB.BIZ.UA"
 
+puntcat:
+  Example: whois.cat
 
+  Question mark query: first line says
+    "% puntCAT Whois Server Copyright (C) 2007 Fundacio puntCAT"
+
+  Main query: just send the domain name
+    Available:
+    Taken: line like "Domain Name: lol.cat"
+    

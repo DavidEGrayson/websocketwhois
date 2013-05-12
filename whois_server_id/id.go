@@ -180,6 +180,8 @@ func (s *serverInfo) identify() {
   case questionMarkResult[0] == "No entries found.":
     s.protocol = "nef"
 
+  case strings.HasPrefix(questionMarkResult[0], "% puntCAT Whois Server"):
+    s.protocol = "puntcat"
   }
 
   if (s.protocol == "") {
