@@ -186,6 +186,6 @@ puntcat:
     "% puntCAT Whois Server Copyright (C) 2007 Fundacio puntCAT"
 
   Main query: just send the domain name
-    Available:
+    Available: line like "% Object "lolz.cat" NOT FOUND."
     Taken: line like "Domain Name: lol.cat"
     
