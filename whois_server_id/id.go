@@ -5,10 +5,7 @@ package main
 // http://www.iana.org/domains/root/files
 
 import (
-  //"flag"
   "log"
-  //"net/http"
-  //"code.google.com/p/go.net/websocket"
   "strings"
   "fmt"
   "os"
@@ -18,6 +15,7 @@ import (
   "time"
   "sort"
   "regexp"
+  "encoding/json"
   //"runtime"
   //"time"
 )
@@ -29,12 +27,12 @@ type upstreamSuffixInfo struct {
 }
 
 type serverInfo struct {
-  name, note, protocol string
-  suffixes []string
+  Name, note, Protocol string
+  Suffixes []string
 }
 
 func (s *serverInfo) log(v ...interface{}) {
-  v = append([]interface{}{ s.name + ": " }, v...)
+  v = append([]interface{}{ s.Name + ": " }, v...)
   fmt.Println(v...)  
 }
 
@@ -68,7 +66,7 @@ func (r *queryResult) isOneLiner(line string) bool {
 // returns it as a queryResult,  which is really just a slice of strings where each
 // string is a line and the line-ending characters have been removed.
 func (s *serverInfo) query(query string) (queryResult, error) {
-  addr := s.name + ":43"
+  addr := s.Name + ":43"
   conn, err := net.DialTimeout("tcp", addr, 40 * time.Second)
   if err != nil {
     s.log("Error dialing", err)
@@ -121,7 +119,7 @@ func (s *serverInfo) identifyWs20() {
     //s.log("Claims to support suffixes: " + strings.Join(claimedSuffixes, ", "))
     
     // TODO: print a warning message if we the followling line REMOVES any suffixes from s
-    s.suffixes = claimedSuffixes
+    s.Suffixes = claimedSuffixes
   } else {
     s.log("The last paragraph did not talk about the registry's scope.  It was simply: " + str);
   }
@@ -157,43 +155,41 @@ func (s *serverInfo) identify() {
   case len(questionMarkResult) == 0:
 
   case len(questionMarkResult) > 20 && questionMarkResult[1] == "Whois Server Version 2.0":
-    s.protocol = "ws20"
+    s.Protocol = "ws20"
     s.identifyWs20()
 
   case questionMarkResult.isOneLiner("Not a valid domain search pattern"):
     if (s.detectAfilias()) {
-      s.protocol = "afilias"
+      s.Protocol = "afilias"
     }
 
   case questionMarkResult.isOneLiner("out of this registry"):
-    s.protocol = "ootr"
+    s.Protocol = "ootr"
 
   case strings.HasPrefix(resultJoined, "Incorrect domain name: "):
-    s.protocol = "idn"
+    s.Protocol = "idn"
 
   case questionMarkResult.isOneLiner("Incorrect Query or request for domain not managed by this registry."):
-    s.protocol = "iqor"
+    s.Protocol = "iqor"
 
   case len(questionMarkResult) > 20 && questionMarkResult[1] == "% This is ARNES whois database":
-    s.protocol = "arnes"
+    s.Protocol = "arnes"
 
   case strings.HasPrefix(questionMarkResult[0], "swhoisd"):
-    s.protocol = "swhoisd"
+    s.Protocol = "swhoisd"
 
   case questionMarkResult[0] == "No entries found.":
-    s.protocol = "nef"
+    s.Protocol = "nef"
 
   case strings.HasPrefix(questionMarkResult[0], "% puntCAT Whois Server"):
-    s.protocol = "puntcat"
+    s.Protocol = "puntcat"
   }
 
-  if (s.protocol == "") {
+  if (s.Protocol == "") {
     s.log("Failed to determine protocol.");
   } else {
-    s.log("protocol=", s.protocol, " suffixes=", s.suffixes);
+    s.log("protocol=", s.Protocol, " suffixes=", s.Suffixes);
   }
-
-  return
 }
 
 func readUpstreamSuffixInfos(filename string) []upstreamSuffixInfo {
@@ -262,16 +258,16 @@ func groupByServer(suffixes []upstreamSuffixInfo) map[string] *serverInfo {
     if server == nil {
       server = &serverInfo{}
       servers[suffix.server] = server
-      server.name = suffix.server
+      server.Name = suffix.server
       server.note = suffix.note
     }
 
     if server.note != suffix.note {
       log.Fatalf("Conflicting notes for %s: %s and %s.",
-        server.name, server.note, suffix.note)
+        server.Name, server.note, suffix.note)
     }
     
-    server.suffixes = append(server.suffixes, suffix.name)
+    server.Suffixes = append(server.Suffixes, suffix.name)
   }
 
   return servers
@@ -326,7 +322,7 @@ func serialIdentifyAll(servers []*serverInfo) {
   }
 }
 
-func parallelIdentifyAll(servers map[string] *serverInfo) {
+func parallelIdentifyAll(servers []*serverInfo) {
   ch := make(chan bool)
 
   // Define the function we want to run in parallel.
@@ -342,28 +338,51 @@ func parallelIdentifyAll(servers map[string] *serverInfo) {
   for _, _ = range servers { <- ch }
 }
 
+type OutputFile struct {
+  Servers []*serverInfo
+}
+
+func writeOutput(servers []*serverInfo) {
+  output := OutputFile { }
+
+  output.Servers = servers
+
+  file, err := os.Create("whois_database.json")
+  if err != nil {
+	  log.Fatal("Error opening output file.", err)
+  }
+  defer file.Close()
+
+  //data, err := json.Marshal(output)  // For production.
+  data, err := json.MarshalIndent(output, "", "  ")  // For development.
+  if err != nil {
+    log.Fatal("Error marshalling json data.", err)
+  }
+
+  n, err := file.Write(data)
+  if err != nil || n != len(data) {
+    log.Fatal("Error writing to output file.", err)
+  }
+}
 
 func main() {
   upstreamSuffixInfos := readUpstreamSuffixInfos("tld_serv_list")
   
   //fmt.Println(upstreamSuffixInfos)
 
-  servers := groupByServer(upstreamSuffixInfos)
+  serverMap := groupByServer(upstreamSuffixInfos)
 
-  removeUnusableServers(servers)
+  removeUnusableServers(serverMap)
+
+  servers := sortServers(serverMap)
 
   // TODO: Since servers only has info about actual whois servers, we
   // should also pull out the information about TLDs that have no server
   // or only have a web interface, so we can show it to our users should
   // they request it.  That infor is in upstreamSuffixInfos.
 
-  //niceSuffixInfos := parallelMap(upstreamSuffixInfos, identifyServer)
-  //serialIdentifyAll(sortServers(servers))
-  parallelIdentifyAll(servers);
+  //serialIdentifyAll(sortServers(servers)) // For debugging.
+  parallelIdentifyAll(servers);             // For production.
 
-  // TODO: sort results
-
-  for _, server := range servers {
-    fmt.Println(*server);
-  }
+  writeOutput(servers)
 }
