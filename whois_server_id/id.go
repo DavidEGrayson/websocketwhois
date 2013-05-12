@@ -118,8 +118,6 @@ func (s *serverInfo) identifyWs20() {
 }
 
 func (s *serverInfo) identify() {
-  log := *log.New(os.Stdout, fmt.Sprintf("%s: ", s.name), log.Flags())
-
   s.log("Identifying.  Suffixes =", s.suffixes)
 
   // Can we get a help screen?
