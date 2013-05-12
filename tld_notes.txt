@@ -96,4 +96,9 @@
 
 		No prefix search!
 
+.GD .TC .VG
+    whois.adamsnames.tc
 
+    It lies when it says "Your request could not be performed.  Lookup quota exceeded."
+    That just means it didn't understand your query.
+    No rate limiting detected.
