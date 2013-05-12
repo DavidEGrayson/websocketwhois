@@ -45,7 +45,10 @@
 
 
 .ORG
-  Need a zone file because public internet registry rate-limits us.
+  TODO: Need a zone file because public internet registry rate-limits us.
+
+.PE
+  TODO: Get zone file because kero.yachay.pe rate-limits us.
 
 .INFO
   whois.afilias.info.    ? query returns error message nothing

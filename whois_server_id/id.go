@@ -233,6 +233,20 @@ func groupByServer(suffixes []upstreamSuffixInfo) map[string] *serverInfo {
   return servers
 }
 
+// These servers have a pretty extreme rate limit so we do not plan on contacting
+// them in production.  We do not need to identify their protocol.
+func removeRateLimitingServers(serverMap map[string] *serverInfo) {
+  rateLimitingServers := []string {
+    "whois.pir.org",
+    "kero.yachay.pe",
+  }
+
+  for _, serverName := range rateLimitingServers {
+    delete(serverMap, serverName)
+  }
+}
+
+
 // In Ruby this would just be serverMap.values.sort_by(&:name).
 func sortServers(serverMap map[string] *serverInfo) []*serverInfo {
   serverNames := make([]string, 0)
@@ -261,6 +275,8 @@ func main() {
   //fmt.Println(upstreamSuffixInfos)
 
   servers := groupByServer(upstreamSuffixInfos)
+
+  removeRateLimitingServers(servers)
 
   // TODO: Since servers only has info about actual whois servers, we
   // should also pull out the information about TLDs that have no server
