@@ -29,8 +29,9 @@ type serverInfo struct {
   suffixes []string
 }
 
-func (s *serverInfo) log(str string) {
-  fmt.Println(s.name + ": " + str)  
+func (s *serverInfo) log(v ...interface{}) {
+  fmt.Print(s.name + ": ")
+  fmt.Println(v...)  
 }
 
 type queryResult []string
@@ -59,17 +60,16 @@ func (r *queryResult) lastParagraphJoin() string {
 // string is a line and the line-ending characters have been removed.
 func (s *serverInfo) query(query string) (queryResult, error) {
   addr := s.name + ":43"
-  log := *log.New(os.Stdout, fmt.Sprintf("%s: ", addr), log.Flags())
   conn, err := net.DialTimeout("tcp", addr, 40 * time.Second)
   if err != nil {
-    log.Println("Error dialing", err)
+    s.log("Error dialing", err)
     return nil, err
   }
   defer conn.Close()
 
   _, err = fmt.Fprint(conn, query + "\r\n")
   if err != nil {
-    log.Println("Error sending", err)
+    s.log("Error sending", err)
     return nil, err
   }
 
@@ -80,7 +80,7 @@ func (s *serverInfo) query(query string) (queryResult, error) {
     if err == io.EOF {
       break
     } else if err != nil {
-      log.Println("Error reading line:", err);
+      s.log("Error reading line:", err);
       return nil, err
     }
     str = strings.TrimRight(str, "\r\n")
@@ -120,12 +120,12 @@ func (s *serverInfo) identifyWs20() {
 func (s *serverInfo) identify() {
   log := *log.New(os.Stdout, fmt.Sprintf("%s: ", s.name), log.Flags())
 
-  log.Print("Identifying.  Suffixes = ", s.suffixes)
+  s.log("Identifying.  Suffixes =", s.suffixes)
 
   // Can we get a help screen?
   questionMarkResult, err := s.query("?")
   if err != nil {
-    log.Print("Failed to get help screen.")
+    s.log("Failed to get help.")
     return
   }
 
@@ -140,7 +140,7 @@ func (s *serverInfo) identify() {
 
 
   if (s.protocol == "") {
-    log.Print("Failed to determine protocol.");
+    s.log("Failed to determine protocol.");
   }
   return
 }
