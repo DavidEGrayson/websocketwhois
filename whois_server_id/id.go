@@ -171,8 +171,14 @@ func (s *serverInfo) identify() {
   case questionMarkResult.isOneLiner("Incorrect Query or request for domain not managed by this registry."):
     s.protocol = "iqor"
 
-  case len(questionMarkResult) > 20 && questionMarkResult[1] == "% This is ARNES whois database"
+  case len(questionMarkResult) > 20 && questionMarkResult[1] == "% This is ARNES whois database":
     s.protocol = "arnes"
+
+  case strings.HasPrefix(questionMarkResult[0], "swhoisd"):
+    s.protocol = "swhoisd"
+
+  case questionMarkResult[0] == "No entries found.":
+    s.protocol = "nef"
 
   }
 
@@ -284,7 +290,8 @@ func removeUnusableServers(serverMap map[string] *serverInfo) {
     "whois.pir.org",            // .org
     "kero.yachay.pe",           // .ae
     "whois.adamsnames.tc",      // .gd .tc, .vg, 
-    "whois.aeda.net.ae",        // .ae    
+    "whois.aeda.net.ae",        // .ae
+    "whois.ausregistry.net.au", // .au
 
     // I tried but could not figure out how to get a meaningul response from these:
     "whois.ac.za",              // .ac.za

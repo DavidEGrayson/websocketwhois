@@ -95,7 +95,7 @@ ootr:
 
 
 ndf:
-  Example: whois.aeda.net.ae
+  Example: whois.aeda.net.ae, whois.ausregistry.net.au
 	
   Question mark query returns one-liner "No Data Found".
 
@@ -115,8 +115,13 @@ ndf:
     Too many matches (> 10):
 		  No special indication, except that the list only has 10 domain names.
 
+  NOTE: whois.ausregistry.net.au can get results for several au SLDs, but I cannot
+    find the documentation of the full list.  It can at least do:
+    .au .asn.au .com.au .net.au
+
   UHOH, I got blacklisted from whois.aeda.net.ae after exactly 20 queries:
     BLACKLISTED: You have exceeded the query limit for your network or IP address and have been blacklisted.
+  Same blacklisting happened at whois.ausregistry.net.au after exactly 15 queries.
 
 
 idn:
@@ -152,3 +157,26 @@ arnes:
 
     Taken:
       There will be line like "domain:                 gzg.si"
+
+
+swhoisd:
+  Example: whois.ax
+  
+  Question mark query: first line is like "swhoisd 3.0.5"
+
+  Main query: just send the domain name, with tld (e.g. "web.ax")
+    swhoisd will return a lot of junk!  You must search for a line like
+      "Domain Name:              web.ax"
+    where the part after the spaces exactly matches what you would expect.
+    That will tell you whether it is taken or not.
+
+nef:
+  Example: whois.biz.ua
+  
+  Question mark query: says "No entries found."
+
+  Main query:
+    Available: "No entries found." followed by several blank lines
+    Taken: There will be a line like "Domain Name:AB.BIZ.UA"
+
+
