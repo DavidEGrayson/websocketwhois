@@ -34,7 +34,7 @@ type serverInfo struct {
 }
 
 func (s *serverInfo) log(v ...interface{}) {
-  fmt.Print(s.name + ": ")
+  v = append([]interface{}{ s.name + ": " }, v...)
   fmt.Println(v...)  
 }
 
@@ -75,6 +75,7 @@ func (s *serverInfo) query(query string) (queryResult, error) {
     return nil, err
   }
   defer conn.Close()
+  conn.SetDeadline(time.Now().Add(40 * time.Second))
 
   _, err = fmt.Fprint(conn, query + "\r\n")
   if err != nil {
@@ -153,6 +154,8 @@ func (s *serverInfo) identify() {
 
   switch {
 
+  case len(questionMarkResult) == 0:
+
   case len(questionMarkResult) > 20 && questionMarkResult[1] == "Whois Server Version 2.0":
     s.protocol = "ws20"
     s.identifyWs20()
@@ -192,15 +195,6 @@ func (s *serverInfo) identify() {
 
   return
 }
-
-//func parallelMap(input []upstreamSuffixInfo, f func(upstreamSuffixInfo) niceSuffixInfo) (output []niceSuffixInfo) {
-//  output = make([]niceSuffixInfo, len(input))
-//  ch := make(chan niceSuffixInfo)
-//  process := func(info upstreamSuffixInfo) { ch <- f(info) }
-//  for _, info := range input { go process(info) }
-//  for i := range output { output[i] = <- ch }
-//  return
-//}
 
 func readUpstreamSuffixInfos(filename string) []upstreamSuffixInfo {
   upstreamSuffixInfos := make([]upstreamSuffixInfo, 0)
@@ -332,6 +326,23 @@ func serialIdentifyAll(servers []*serverInfo) {
   }
 }
 
+func parallelIdentifyAll(servers map[string] *serverInfo) {
+  ch := make(chan bool)
+
+  // Define the function we want to run in parallel.
+  process := func(server *serverInfo) {
+    (*server).identify()
+    ch <- true
+  }
+
+  // Start it running in parallel (massively).
+  for _, info := range servers { go process(info) }
+
+  // Wait for all goroutines to finish.
+  for _, _ = range servers { <- ch }
+}
+
+
 func main() {
   upstreamSuffixInfos := readUpstreamSuffixInfos("tld_serv_list")
   
@@ -347,8 +358,9 @@ func main() {
   // they request it.  That infor is in upstreamSuffixInfos.
 
   //niceSuffixInfos := parallelMap(upstreamSuffixInfos, identifyServer)
-  serialIdentifyAll(sortServers(servers))
-  
+  //serialIdentifyAll(sortServers(servers))
+  parallelIdentifyAll(servers);
+
   // TODO: sort results
 
   for _, server := range servers {
