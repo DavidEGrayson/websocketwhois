@@ -1,0 +1,34 @@
+I am attempting to classify all the different protocols used by whois servers
+and define them here.  This document will also be implemented in code in various
+places.  The whois_server_id program will use the information here to identify
+which protocol a given sever uses.  The production server will use this information
+to make queries to the server and interpet their results.
+
+ootr:
+  Examples: cwhois.cnnic.cn
+
+  Responds with 1-liners "Out of this registry..." for question mark query.
+
+  Available domains:
+    "no matching record" if domain does not exist.
+
+  Taken domains:
+    line starts with "Domain name: " (e.g. google.xn--fiqz9s | nc cwhois.cnnic.cn)
+    "reserved domain" for sometimes (e.g. a.xn--fiqs8s | cwhois.cnnic.cn)
+    "the domain you requested is in the reserved list" (e.g. china.xn--fiqs8s | cwhois.cnnic.cn)
+
+		Sample output:  echo -e "google.xn--fiqz9s\r\n" | nc cwhois.cnnic.cn 43
+		  Domain Name: google.中国
+      Domain Status: clientDeleteProhibited
+      Domain Status: clientTransferProhibited
+      Domain Status: clientUpdateProhibited
+      Domain Status: inactive
+      Registrant ID: markidn-135742
+      Registrant: Google Inc.
+      Registrant Contact Email: dns-admin@google.com
+      Registrar Name: MarkMonitor Inc.
+      Create Date: 2012-10-29 00:00:01
+      Expiration Date: 2015-10-29 00:00:00
+      DNSSEC: unsigned
+  
+	Prefix queries: probably no

@@ -28,32 +28,68 @@ type serverInfo struct {
   suffixes []string
 }
 
-func (s *serverInfo) query(query string) {
+type queryResult []string
+
+// Opens a TCP connection to the remote server and sends a query.  The query consists
+// of the provided string followed by "\r\n".  Reads data back from the server and
+// returns it as a queryResult,  which is really just a slice of strings where each
+// string is a line and the line-ending characters have been removed.
+func (s *serverInfo) query(query string) (queryResult, error) {
   addr := s.name + ":43"
   log := *log.New(os.Stdout, fmt.Sprintf("%s: ", addr), log.Flags())
   conn, err := net.DialTimeout("tcp", addr, 40 * time.Second)
   if err != nil {
     log.Println("Error dialing", err)
-    return
+    return nil, err
   }
   defer conn.Close()
 
   _, err = fmt.Fprint(conn, query + "\r\n")
   if err != nil {
     log.Println("Error sending", err)
-    return
+    return nil, err
   }
 
+  reader := bufio.NewReader(conn)
+  result := queryResult([]string {})
+  for {
+    str, err := reader.ReadString('\n')
+    if err == io.EOF {
+      break
+    } else if err != nil {
+      log.Println("Error reading line:", err);
+      return nil, err
+    }
+    str = strings.TrimRight(str, "\r\n")
+
+    result = append(result, str)
+  }
+
+  return result, nil
 }
 
 func (s *serverInfo) identify() {
   log := *log.New(os.Stdout, fmt.Sprintf("%s: ", s.name), log.Flags())
 
-  log.Print("Identifying.")
+  log.Print("Identifying.  Suffixes = ", s.suffixes)
 
   // Can we get a help screen?
-  s.query("?")
+  questionMarkResult, err := s.query("?")
+  if err != nil {
+    log.Print("Failed to get help screen.")
+    return
+  }
 
+  switch {
+  case len(questionMarkResult) == 1 && questionMarkResult[0] == "out of this registry":
+    log.Print("Out of this registry...")
+    s.protocol = "ootr"
+  }
+
+
+  if (s.protocol == "") {
+    log.Print("Failed to determine protocol.");
+  }
   return
 }
 
