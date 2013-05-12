@@ -121,9 +121,23 @@ func (s *serverInfo) identifyWs20() {
   }
 }
 
-func (s *serverInfo) identify() {
-  s.log("Identifying.  Suffixes =", s.suffixes)
+func (s *serverInfo) detectAfilias() bool {
+  result, err := s.query("help")
+  if err != nil {
+    s.log("Failed to get afilias help screen.");
+    return false
+  }
 
+  str := strings.Join(result, " ");
+  if !strings.Contains(str, "afilias") {
+    s.log("Looked like an afilias server but did not return 'afilias' anywhere in the help screen.")
+    return false
+  }
+
+  return true
+}
+
+func (s *serverInfo) identify() {
   // Can we get a help screen?
   questionMarkResult, err := s.query("?")
   if err != nil {
@@ -138,12 +152,19 @@ func (s *serverInfo) identify() {
 
   case len(questionMarkResult) == 1 && questionMarkResult[0] == "out of this registry":
     s.protocol = "ootr"
-  }
 
+  case len(questionMarkResult) == 1 && questionMarkResult[0] == "Not a valid domain search pattern":
+    if (s.detectAfilias()) {
+      s.protocol = "afilias"
+    }
+  }
 
   if (s.protocol == "") {
     s.log("Failed to determine protocol.");
+  } else {
+    s.log("protocol=", s.protocol, " suffixes=", s.suffixes);
   }
+
   return
 }
 
@@ -238,15 +259,19 @@ func groupByServer(suffixes []upstreamSuffixInfo) map[string] *serverInfo {
 }
 
 func removeUnusableServers(serverMap map[string] *serverInfo) {
+  // TODO: get zone file access for all these weird servers, or at least the important ones.
+
   weirdServers := []string {
     // These servers have a pretty extreme rate limit so we do not plan on contacting
     // them in production.  We do not need to identify their protocol.
-    "whois.pir.org",
-    "kero.yachay.pe",
-    "whois.adamsnames.tc",
+    "whois.pir.org",            // .org
+    "kero.yachay.pe",           // .ae
+    "whois.adamsnames.tc",      // .gd .tc, .vg, 
+    "whois.aeda.net.ae",        // .ae
 
     // I tried but could not figure out how to get a meaningul response from these:
-    "whois.ac.za", // TODO: tell users that the entire list is here: http://protea.tenet.ac.za/cgi/cgi_domainquery.exe?list
+    "whois.ac.za",              // .ac.za
+    // TODO: tell our users that the entire .ac.za list is here: http://protea.tenet.ac.za/cgi/cgi_domainquery.exe?list
   }
 
   for _, serverName := range weirdServers {

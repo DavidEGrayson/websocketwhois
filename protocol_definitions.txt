@@ -8,6 +8,61 @@ TODO: learn about the Domain Status field.  Does "inactive" mean someone can gra
   domain, or what?
 
 
+ws20:
+  Examples: jobswhois.verisign-grs.com, whois.crsnic.net
+
+  NOTE: Not all ws20 servers are the same!  For example, jobswhois.verisign-grs.com allows you
+  to limit your search to one tld according to their help page, but whois.crsnic.net does NOT.
+
+  Question mark query returns a nice help page where the
+    second line is "Whois Server Version 2.0".
+
+  Single domain query: "sum domain example.com".
+  	Available:  Third paragraph first line is prefixed with "No match for domain"
+    Taken:
+      Third paragraph contains simple list of capitalized domain names.
+      Your domain will appear in that list.
+
+  Prefix queries:
+	  Query: "sum domain pa example"
+
+		No matches:
+		  Third paragraph has line with prefix. "No match for partial domain"
+
+    Some matches:
+      Third paragraph has list of capitalized domain names that match.
+
+    Too many matches (> 50):
+		  Third paragraph starts with "Aborting search 50 records found ....."
+
+	Identify what TLDs are in the registry:
+	  Query: "sum domain - "
+		Last paragraph first line says one of:
+      "The Registry database contains ONLY .cc, .tv, and .jobs domains"
+      "The Registry database contains ONLY .COM, .NET, .EDU domains and"
+
+afilias:
+  Example: whois.aero. whois.afilias.info
+  Question mark query or unknown TLD: "Not a valid domain search pattern" one-liner
+
+	Help query: "help"
+    Returns useful help page which mentions "afilias" several times.
+
+	This protocol supports possible-next-letter queries.
+
+  Single domain query: "sum example.info"
+    TLD must be supplied.
+		Available: "NOT FOUND" one-liner 
+    Taken: provides a line like "Domain Name:ABC.INFO"
+ 
+  Prefix query: "sum example%.info"
+    TLD must be supplied.
+		No matches: "NOT FOUND" one-liner
+		Some matches: A line like "Domain Name:ABC.INFO" for each match
+		Too many matches (>= 50):  Silently truncates result length to 50.
+      If we get 50 results, we really should assume that some were truncated.
+		  
+
 ootr:
   Examples: cwhois.cnnic.cn
 
@@ -39,35 +94,27 @@ ootr:
 	Prefix queries: probably no
 
 
-ws20:
-  Examples: jobswhois.verisign-grs.com, whois.crsnic.net
+ndf:
+  Example: whois.aeda.net.ae
+	
+  Question mark query returns one-liner "No Data Found".
 
-  NOTE: Not all ws20 servers are the same.  For example, jobswhois.verisign-grs.com allows you
-  to limit your search to one tld according to their help page, whil whois.crsnic.net does NOT.
+  Search string must contain at least 5 characters before a wildcard (%).
 
-  Main query: "sum domain example.com".
+  Main query:  Just send the domain name.  TLD is optional.
+	  Available: one-liner "No Data Found"
+	  Taken: There will be a line starting with "Domain Name:", and other details.
 
-	Available domains:
-	  Third paragraph first line is prefixed with "No match for domain"
+  Prefix query:
+    Example: earth%
+    
+		No matches: one-liner "No Data Found"
+		One match:  Result looks just like the normal "Taken" response (has details).
+    Some matches: Just a list of lines that start with "Domain 
 
-	Taken domains:
-    Third paragraph contains simple list of capitalized domain names.
-    Your domain will appear in that list.
+    Too many matches (> 10):
+		  No special indication, except that the list only has 10 domain names.
 
-  Prefix queries:
-	  Query: "sum domain pa example"
+  UHOH, I got blacklisted from whois.aeda.net.ae after exactly 20 queries:
+    BLACKLISTED: You have exceeded the query limit for your network or IP address and have been blacklisted.
 
-		No matches:
-		  Third paragraph has line with prefix. "No match for partial domain"
-
-    Some matches:
-      Third paragraph has list of capitalized domain names that match.
-
-    Too many matches (> 50):
-		  Third paragraph starts with "Aborting search 50 records found ....."
-
-	Identify what TLDs are in the registry:
-	  Query: "sum domain - "
-		Last paragraph first line says one of:
-      "The Registry database contains ONLY .cc, .tv, and .jobs domains"
-      "The Registry database contains ONLY .COM, .NET, .EDU domains and"

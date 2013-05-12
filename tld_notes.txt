@@ -2,6 +2,7 @@
 //   http://stackoverflow.com/questions/12791340/strategies-to-reduce-the-whois-query-burden?rq=1
 
 // Useful resources for figuring out stuff:
+//   Ruby whois: https://github.com/weppos/whois
 //   Very brief list: http://data.iana.org/TLD/tlds-alpha-by-domain.txt
 //   Nice list:  http://www.iana.org/domains/root/db
 //   List of servers used by GNU whois:
@@ -95,10 +96,3 @@
         Third level registrations may be available on this shared name.
 
 		No prefix search!
-
-.GD .TC .VG
-    whois.adamsnames.tc
-    TODO: get a zone file from adamsnames
-    Usually says: "Your request could not be performed.  Lookup quota exceeded."
-
-
