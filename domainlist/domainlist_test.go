@@ -58,16 +58,16 @@ func testFind(t *testing.T, entry string, expectedOffset int64) {
   }
 }
 
-var runes = []byte {
+var bytelist = []byte {
   'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
   'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '-',
 }
 
 func randomEntry() string {
-  length := (rand.Int() % 25) + 3
+  length := 3 + rand.Intn(25)
   str := ""
   for i := 0; i < length; i++ {
-    str += string(runes[rand.Int() % len(runes)])
+    str += string( bytelist[ rand.Intn(len(bytelist)) ] )
   }
   return str
 }
