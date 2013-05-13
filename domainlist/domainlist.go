@@ -4,7 +4,6 @@ package domainlist
 // not contain "inactive" domain names because those are not part of the zone file.
 
 import (
-  "fmt"
   "os"
   "io"
   "bytes"
@@ -44,7 +43,6 @@ func (f *File) setup() (err error) {
     return
   }
   f.size = info.Size()
-  fmt.Printf("size = %d\n", f.size)
   return
 }
 
@@ -76,8 +74,6 @@ func goBackToStartOfLine(osFile * os.File, currentOffset int64) (offset int64, e
 // Finds the given domain name and return the offset of the first character of
 // its line.  Returns -1 if the domain was not found.
 func (f *File) Find(domainNameStr string) (offset int64, err error) {
-	fmt.Println("Hello.  I should find " + domainNameStr)
-
   domainName := []byte(domainNameStr)
 
   // lowerBound points to the first byte of the first line that might contain the
@@ -103,8 +99,7 @@ func (f *File) Find(domainNameStr string) (offset int64, err error) {
     if err != nil { return -1, err }
 
     fragment := make([]byte, 80)
-    var n int
-    n, err = f.osFile.Read(fragment)
+    n, err := f.osFile.Read(fragment)
     if err != nil && err != io.EOF { return -1, err }
     fragment = fragment[0:n]
 
@@ -117,16 +112,14 @@ func (f *File) Find(domainNameStr string) (offset int64, err error) {
 
     comparison := bytes.Compare(bisectingDomainName, domainName)
 
-    fmt.Printf("%11d %11d %11d %11d %s %d\n",
-      lowerBound, bisectPoint, upperBound, upperBound - lowerBound,
-      bisectingDomainName, comparison)
+    //fmt.Printf("%11d %11d %11d %11d %s %d\n",
+    //  lowerBound, bisectPoint, upperBound, upperBound - lowerBound,
+    //  bisectingDomainName, comparison)
 
     switch comparison {
-    case 0: return bisectPoint, nil
-    case 1:
-      upperBound = bisectPoint
-    case -1:
-      lowerBound = bisectPoint + int64(len(bisectingDomainName)) + 1
+    case  0: return bisectPoint, nil
+    case  1: upperBound = bisectPoint
+    case -1: lowerBound = bisectPoint + int64(len(bisectingDomainName)) + 1
     }
   }
 

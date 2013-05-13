@@ -1,7 +1,6 @@
 /server/server
 /whois_server_id/whois_server_id
 /zonefile_process/zonefile_process
-/domainlist_benchmark/domainlist_benchmark
 
 /whois_server_id/whois_database.json
 /data
