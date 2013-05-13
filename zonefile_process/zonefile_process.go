@@ -3,6 +3,8 @@ package main
 // TODO: assert that the lines that contain domain names are contiguous block
 //   If not, throw an error.
 
+// TODO: assert that no domain names are longer than 80 characters
+
 import (
   "os"
   "log"

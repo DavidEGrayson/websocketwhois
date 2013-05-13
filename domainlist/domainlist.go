@@ -7,6 +7,8 @@ import (
   "fmt"
   "os"
   "io"
+  "bytes"
+  "errors"
 )
 
 func Open(name string) (file *File, err error) {
@@ -32,26 +34,6 @@ type File struct {
   size int64
 }
 
-// Compares two byte slices alphabetically.
-// Returns 1 is the first is greater.
-// Returns -1 is the second is greater.
-// Return 0 is the two are exactly the same.
-//
-// The byte slices are not necessarily null terminated.
-// Slice a is less than slice a + b as long as b is nonempty.
-func Compare(x, y []byte) int {
-  i := 0
-  for {
-    if i == len(x) && i == len(y) { return 0; }
-    if i == len(x) { return -1 }
-    if i == len(y) { return 1 }
-    if x[i] < y[i] { return -1 }
-    if x[i] > y[i] { return 1 }
-    i += 1
-  }
-  return 0  // TODO: upgrade to go 1.1 and run "go vet" to get rid of things like this
-}
-
 func (f *File) Close() error {
   return f.osFile.Close()
 }
@@ -66,6 +48,10 @@ func (f *File) setup() (err error) {
   return
 }
 
+
+// TODO: Consider forcing the beginning of the file to have a newline.
+// Then we can get rid of all the checks for offset == 0 in this method.
+// Only do it if the benchmarks get noticeably faster!
 func goBackToStartOfLine(osFile * os.File, currentOffset int64) (offset int64, err error) {
   byteslice := make([]byte, 1)
 
@@ -89,10 +75,10 @@ func goBackToStartOfLine(osFile * os.File, currentOffset int64) (offset int64, e
 
 // Finds the given domain name and return the offset of the first character of
 // its line.  Returns -1 if the domain was not found.
-func (f *File) Find(domainName string) (offset int64, err error) {
-	fmt.Println("Hello.  I should find " + domainName)
+func (f *File) Find(domainNameStr string) (offset int64, err error) {
+	fmt.Println("Hello.  I should find " + domainNameStr)
 
-  offset = -1
+  domainName := []byte(domainNameStr)
 
   // lowerBound points to the first byte of the first line that might contain the
   //   domain we a looking for
@@ -105,41 +91,38 @@ func (f *File) Find(domainName string) (offset int64, err error) {
   for {
     bisectPoint := (lowerBound + upperBound) / 2
 
-    fmt.Printf("points: %d %d %d\n", lowerBound, bisectPoint, upperBound)
-
-    _, err = f.osFile.Seek(bisectPoint, 0)
-    if err != nil { return }
+    _, err := f.osFile.Seek(bisectPoint, 0)
+    if err != nil { return -1, err }
 
     bisectPoint, err = goBackToStartOfLine(f.osFile, bisectPoint)
-    if err != nil { return }
+    if err != nil { return -1, err }
 
-    fmt.Printf("bisect point now = %d\n", bisectPoint)
-
-    bytes := make([]byte, 80)
-    obytes := bytes
+    fragment := make([]byte, 80)
     var n int
-    n, err = f.osFile.Read(bytes)
-    if err != nil && err != io.EOF { return }
-    bytes = bytes[0:n]
+    n, err = f.osFile.Read(fragment)
+    if err != nil && err != io.EOF { return -1, err }
+    fragment = fragment[0:n]
 
-    foundNewline := false
-    for i, byte := range bytes {
-      if byte == '\n' {
-        foundNewline = true
-        bytes = bytes[0:i]
-        break
-      }
+    newlineIndex := bytes.IndexByte(fragment, '\n')
+    if newlineIndex == -1 {
+      // We found a line longer than expected.  Should not happen.
+      return -1, errors.New("Domain list file has a line longer than 80 bytes.")
     }
+    bisectingDomainName := fragment[0:newlineIndex]
 
-    if !foundNewline {
-      // TODO: reutrn an error here
-      //eturn -1, err
+    comparison := bytes.Compare(bisectingDomainName, domainName)
+
+    fmt.Printf("%11d %11d %11d %11d %s %d\n",
+      lowerBound, bisectPoint, upperBound, upperBound - lowerBound,
+      bisectingDomainName, comparison)
+
+    switch comparison {
+    case 0: return bisectPoint, nil
+    case 1:
+      upperBound = bisectPoint
+    case -1:
+      lowerBound = bisectPoint + int64(len(bisectingDomainName)) + 1
     }
-
-    fmt.Printf("bytes: %d %s\n", len(bytes), bytes)
-    fmt.Printf("bytes: %d %s\n", len(obytes), obytes)
-    return -1, nil
-
   }
 
   return

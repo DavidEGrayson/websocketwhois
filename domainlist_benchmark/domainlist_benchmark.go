@@ -13,7 +13,7 @@ func main() {
   if err != nil {
     log.Fatal(err);
   }
-  _, err = file.Find("graysonfamily.org")
+  _, err = file.Find("0.org")
   if err != nil {
     log.Fatal(err)
   }
