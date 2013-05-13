@@ -23,8 +23,12 @@ func (f *File) Close() error {
 }
 
 // Find the given domain name and return the offset of the first character of
-// its line.
-func (f *File) Find(domainName string) int {
+// its line.  Returns -1 if the domain was not found.
+func (f *File) Find(domainName string) (offset int64, err error) {
+  _, _ = f.osFile.Seek(1053725408*3/4, 0)
+  bytes := make([]byte, 300)
+  _, _ = f.osFile.Read(bytes)
+  fmt.Println(string(bytes))
   return -1
 }
 
