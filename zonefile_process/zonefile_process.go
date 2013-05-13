@@ -30,12 +30,8 @@ func main() {
 
   for {
     str, err := reader.ReadString('\n')
-    if err == io.EOF {
-      break
-    }
-    if err != nil {
-      log.Fatal(err)
-    }
+    if err == io.EOF { break }
+    if err != nil { log.Fatal(err) }
 
     fields := bytes.Fields( []byte(str) )
     if len(fields) == 0 {
@@ -57,7 +53,9 @@ func main() {
 
       if comparison == -1 {
         // The file is not sorted the way we expect!
-        log.Printf("Zone file is not sorted as we expected.  %s comes after %s\n",
+        // This is a fatal error because it would cause our app to give bad
+        // answers to certain queries.
+        log.Fatalf("Zone file is not sorted as we expected.  %s comes after %s\n",
           string(domainName), string(lastDomainName))
       }
 
