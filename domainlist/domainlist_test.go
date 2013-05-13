@@ -22,10 +22,12 @@ func BenchmarkLookupEnd(b *testing.B) {
 
 func benchLookup(b *testing.B, entry string) {
   list, err := Open("../data/org.domains")  
-  if err != nil { b.Fail() }
+  if err != nil { b.Fatal(err) }
   b.ResetTimer()
   for i := 0; i < b.N; i++ {
     offset, err := list.Find(entry)
-    if err != nil || offset < 0 { b.Fail() }
+    if err != nil || offset < 0 {
+      b.Fatal(err)
+    }
   }
 }

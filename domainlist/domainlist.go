@@ -51,24 +51,49 @@ func (f *File) setup() (err error) {
 // Then we can get rid of all the checks for offset == 0 in this method.
 // Only do it if the benchmarks get noticeably faster!
 func goBackToStartOfLine(osFile * os.File, currentOffset int64) (offset int64, err error) {
-  byteslice := make([]byte, 1)
-
   offset = currentOffset
 
   if (offset == 0) { return }
 
-  offset, err = osFile.Seek(-1, 1)
-  if err != nil { return }
+  var byteslice []byte
+  if (offset < 80) {
 
-  for offset > 0 {
+    byteslice = make([]byte, offset)
+
+    _, err = osFile.Seek(0, 0)
+    if err != nil { return }
+
     _, err = osFile.Read(byteslice)
-    offset += 1
     if err != nil { return }
-    if byteslice[0] == '\n' { return }
-    offset, err = osFile.Seek(-2, 1)
+    
+    for i := 1; i < len(byteslice); i++ {
+      c := byteslice[len(byteslice) - i - 1]
+      if c == '\n' {
+        return osFile.Seek(int64(-i), 1)
+      }
+    }
+    return osFile.Seek(0, 0)
+
+  } else {
+
+    byteslice = make([]byte, 80) // TODO: try making this in advance
+    
+    _, err = osFile.Seek(-80, 1)
     if err != nil { return }
+    
+    _, err = osFile.Read(byteslice)
+    if err != nil { return }
+
+    for i := 1; i < len(byteslice); i++ {
+      c := byteslice[len(byteslice) - i - 1]
+      if c == '\n' {
+        return osFile.Seek(int64(-i), 1)
+      }
+    }
+    return -1, errors.New("Domain list file has line longer than 80 bytes.")
   }
-  return
+
+  panic("unreachable")
 }
 
 // Finds the given domain name and return the offset of the first character of
