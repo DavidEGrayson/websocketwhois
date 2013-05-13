@@ -99,7 +99,7 @@ func (f *File) goBackToStartOfLine(currentOffset int64) (offset int64, err error
         return offset, nil
       }
     }
-    return -1, errors.New("Domain list file has line longer than 80 bytes.")
+    return -1, errors.New("Domain list file has line longer than 79 bytes.")
   }
 
   panic("unreachable")
