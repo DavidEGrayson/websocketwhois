@@ -1,5 +1,7 @@
 package main
 
+// TODO: change this to use the 'bytes' package, not strings
+
 // TODO: assert that the lines that contain domain names are contiguous block
 //   If not, throw an error.
 
@@ -44,9 +46,13 @@ func main() {
       // Found a new domain name.  Write it to stdout.
       lastDomainName = fields[0]
 
-      bytes := []byte(strings.ToLower(fields[0]))
-      bytes[len(bytes)-1] = '\n'  // replace final period with newline
-      _, err := os.Stdout.Write(bytes)
+      domainName := []byte(strings.ToLower(fields[0]))
+
+      // Replace the TLD with newline.  ".org." -> "\n"
+      domainName = domainName[0 : len(domainName) - len(domainNameSuffix) + 1]
+      domainName[len(domainName)-1] = '\n'
+
+      _, err := os.Stdout.Write(domainName)
       if err != nil {
         log.Fatal(err);
       }
