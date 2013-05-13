@@ -24,7 +24,7 @@ func main() {
 
   reader := bufio.NewReader(os.Stdin)
   domainNameSuffix := bytes.ToUpper([]byte("." + os.Args[1] + "."))
-  var lastDomainName string
+  var lastDomainName []byte
 
   ns := []byte("NS")
 
@@ -42,24 +42,29 @@ func main() {
       continue
     }
 
-    if bytes.HasSuffix(fields[0], domainNameSuffix) && bytes.Compare(fields[1], "NS") == 0 {
+    if bytes.HasSuffix(fields[0], domainNameSuffix) && bytes.Compare(fields[1], ns) == 0 {
 
       // Found a domain name.  Process it.
       domainName := bytes.ToLower(fields[0])
-      domainName = domainName[0 : len(domainName) - len(domainNameSuffix) + 1]
-      domainName[len(domainName)-1] = '\n'
+      domainName = domainName[0 : len(domainName) - len(domainNameSuffix)]
       
-      comparison = bytes.Compare(fields[0], lastDomainName)
+      comparison := bytes.Compare(domainName, lastDomainName)
 
       if comparison == 0 {
         // We already printed this domain name.
         continue
       }
 
-      _, err := os.Stdout.Write(domainName)
-      if err != nil {
-        log.Fatal(err);
+      if comparison == -1 {
+        // The file is not sorted the way we expect!
+        log.Printf("Zone file is not sorted as we expected.  %s comes after %s\n",
+          string(domainName), string(lastDomainName))
       }
+
+      domainNameLine := append(domainName, '\n')
+
+      _, err := os.Stdout.Write(domainNameLine)
+      if err != nil { log.Fatal(err) }
 
       lastDomainName = domainName
     }
