@@ -26,8 +26,11 @@ func benchLookup(b *testing.B, entry string) {
   b.ResetTimer()
   for i := 0; i < b.N; i++ {
     offset, err := list.Find(entry)
-    if err != nil || offset < 0 {
+    if err != nil {
       b.Fatal(err)
+    }
+    if offset < 0 {
+      b.FailNow()
     }
   }
 }

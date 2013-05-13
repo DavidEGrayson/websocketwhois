@@ -68,11 +68,14 @@ func (f *File) goBackToStartOfLine(currentOffset int64) (offset int64, err error
 
     _, err = f.osFile.Read(buffer)
     if err != nil { return }
-    
-    for i := 1; i < len(buffer); i++ {
+
+    for i := 0; i < len(buffer); i++ {
       c := buffer[len(buffer) - i - 1]
       if c == '\n' {
-        return f.osFile.Seek(int64(-i), 1)
+        if i > 0 {
+          return f.osFile.Seek(int64(-i), 1)
+        }
+        return offset, nil
       }
     }
     return f.osFile.Seek(0, 0)
@@ -87,10 +90,13 @@ func (f *File) goBackToStartOfLine(currentOffset int64) (offset int64, err error
     _, err = f.osFile.Read(buffer)
     if err != nil { return }
 
-    for i := 1; i < len(buffer); i++ {
+    for i := 0; i < len(buffer); i++ {
       c := buffer[len(buffer) - i - 1]
       if c == '\n' {
-        return f.osFile.Seek(int64(-i), 1)
+        if i > 0 {
+          return f.osFile.Seek(int64(-i), 1)
+        }
+        return offset, nil
       }
     }
     return -1, errors.New("Domain list file has line longer than 80 bytes.")
