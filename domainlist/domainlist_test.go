@@ -2,6 +2,7 @@ package domainlist
 
 import (
   "testing"
+  "math/rand"
 )
 
 func TestBacktrack(t *testing.T) {
@@ -54,6 +55,37 @@ func testFind(t *testing.T, entry string, expectedOffset int64) {
   }
   if offset != expectedOffset {
     t.Fatalf("Expected Find(\"%s\") to return offset %d, got %d\n", entry, expectedOffset, offset)
+  }
+}
+
+var runes = []byte {
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+  'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '-',
+}
+
+func randomEntry() string {
+  length := (rand.Int() % 25) + 3
+  str := ""
+  for i := 0; i < length; i++ {
+    str += string(runes[rand.Int() % len(runes)])
+  }
+  return str
+}
+
+func BenchmarkFindRandom(b *testing.B) {
+  list, err := Open("../data/org.domains")  
+  if err != nil { b.Fatal(err) }
+
+  entries := make([]string, b.N)
+  for i, _ := range entries {
+    entries[i] = randomEntry()
+  }
+
+  b.ResetTimer()
+
+  for _, entry := range entries {
+    _, err := list.Find(entry)
+    if err != nil { b.Fatal(err) }
   }
 }
 
