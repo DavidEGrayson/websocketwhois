@@ -38,12 +38,15 @@ func testBacktrack(t *testing.T, lineStart int64, lineLength int) {
 
 
 func TestFind(t *testing.T) {
+  testFind(t, "AARON", -1)
   testFind(t, "ALMUD", 0)
   testFind(t, "ALMUDE", 6)
   testFind(t, "ALMUDES", 13)
   testFind(t, "ALPHABETS", 533)
   testFind(t, "BLATANT", 1515)
+  testFind(t, "BROADCAST", -1)
   testFind(t, "KATANA", 1523)
+  testFind(t, "ZARKANA", -1)
 }
 
 func testFind(t *testing.T, entry string, expectedOffset int64) {
