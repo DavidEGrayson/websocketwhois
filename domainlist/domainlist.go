@@ -89,6 +89,11 @@ func (f *File) Find(domainNameStr string) (offset int64, err error) {
   upperBound = f.size
 
   for {
+    if upperBound == lowerBound {
+      // Specified domain name does not exist in the file.
+      return -1, nil
+    }
+
     bisectPoint := (lowerBound + upperBound) / 2
 
     _, err := f.osFile.Seek(bisectPoint, 0)
