@@ -59,7 +59,7 @@ func (f *File) goBackToStartOfLine(currentOffset int64) (offset int64, err error
   if (offset == 0) { return }
 
   var buffer []byte
-  if (offset < 80) {
+  if (offset <= 80) {
 
     buffer = f.buffer[0:offset]
 
