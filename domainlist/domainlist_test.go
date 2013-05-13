@@ -38,23 +38,31 @@ func testBacktrack(t *testing.T, lineStart int64, lineLength int) {
 
 
 func TestFind(t *testing.T) {
-  testFind(t, "AARON", -1)
-  testFind(t, "ALMUD", 0)
-  testFind(t, "ALMUDE", 6)
-  testFind(t, "ALMUDES", 13)
-  testFind(t, "ALPHABETS", 533)
-  testFind(t, "BLATANT", 1515)
-  testFind(t, "BROADCAST", -1)
-  testFind(t, "KATANA", 1523)
-  testFind(t, "ZARKANA", -1)
+  testFind(t, "AARON", false, 0)
+  testFind(t, "ALMUD", true, 0)
+  testFind(t, "ALMUDE", true, 6)
+  testFind(t, "ALMUDES", true, 13)
+  testFind(t, "ALPHABETS", true, 533)
+  testFind(t, "BLATANT", true, 1515)
+  testFind(t, "BROADCAST", false, 1523)
+  testFind(t, "KATANA", true, 1523)
+  testFind(t, "ZARKANA", false, 1530)
 }
 
-func testFind(t *testing.T, entry string, expectedOffset int64) {
+func testFind(t *testing.T, entry string, expectToFind bool, expectedOffset int64) {
+
   list, err := Open("test_list.txt")  
   if err != nil { t.Fatal(err) }
-  offset, err := list.Find(entry)
+  found, offset, err := list.Find(entry)
   if err != nil {
     t.Fatal(err)
+  }
+  if found != expectToFind {
+    if expectToFind {
+      t.Fatalf("Expected Find(\"%s\") to find the entry, but it did not.", entry)
+    } else {
+      t.Fatalf("Expected Find(\"%s\") not to find the entry, but it did.", entry)
+    } 
   }
   if offset != expectedOffset {
     t.Fatalf("Expected Find(\"%s\") to return offset %d, got %d\n", entry, expectedOffset, offset)
@@ -87,7 +95,7 @@ func BenchmarkFindRandom(b *testing.B) {
   b.ResetTimer()
 
   for _, entry := range entries {
-    _, err := list.Find(entry)
+    _, _, err := list.Find(entry)
     if err != nil { b.Fatal(err) }
   }
 }
@@ -113,12 +121,7 @@ func benchFind(b *testing.B, entry string) {
   if err != nil { b.Fatal(err) }
   b.ResetTimer()
   for i := 0; i < b.N; i++ {
-    offset, err := list.Find(entry)
-    if err != nil {
-      b.Fatal(err)
-    }
-    if offset < 0 {
-      b.FailNow()
-    }
+    _, _, err := list.Find(entry)
+    if err != nil { b.Fatal(err) }
   }
 }

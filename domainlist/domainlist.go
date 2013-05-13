@@ -105,9 +105,14 @@ func (f *File) goBackToStartOfLine(currentOffset int64) (offset int64, err error
   panic("unreachable")
 }
 
-// Finds the given domain name and return the offset of the first character of
-// its line.  Returns -1 if the domain was not found.
-func (f *File) Find(domainNameStr string) (offset int64, err error) {
+// Tries to find the given domain name and retuns three values:
+// found bool:  Whether the domain name was found or not.
+// offset int64: If the domain name was found, this is the offset where it exists.
+//   If the domain name was not found, this is the offset in the file where
+//   we would expect the domain name to be.
+// err error: Any operating system errors or unexpected data in the file.
+//   If err is non-nil, then found is false and offset is -1.
+func (f *File) Find(domainNameStr string) (found bool, offset int64, err error) {
   domainName := []byte(domainNameStr)
 
   // lowerBound points to the first byte of the first line that might contain the
@@ -121,26 +126,26 @@ func (f *File) Find(domainNameStr string) (offset int64, err error) {
   for {
     if upperBound == lowerBound {
       // Specified domain name does not exist in the file.
-      return -1, nil
+      return false, lowerBound, nil
     }
 
     bisectPoint := (lowerBound + upperBound) / 2
 
     _, err := f.osFile.Seek(bisectPoint, 0)
-    if err != nil { return -1, err }
+    if err != nil { return false, -1, err }
 
     bisectPoint, err = f.goBackToStartOfLine(bisectPoint)
-    if err != nil { return -1, err }
+    if err != nil { return false, -1, err }
 
     fragment := make([]byte, 80)
     n, err := f.osFile.Read(fragment)
-    if err != nil && err != io.EOF { return -1, err }
+    if err != nil && err != io.EOF { return false, -1, err }
     fragment = fragment[0:n]
 
     newlineIndex := bytes.IndexByte(fragment, '\n')
     if newlineIndex == -1 {
       // We found a line longer than expected.  Should not happen.
-      return -1, errors.New("Domain list file has a line longer than 80 bytes.")
+      return false, -1, errors.New("Domain list file has a line longer than 80 bytes.")
     }
     bisectingDomainName := fragment[0:newlineIndex]
 
@@ -151,7 +156,7 @@ func (f *File) Find(domainNameStr string) (offset int64, err error) {
     //  bisectingDomainName, comparison)
 
     switch comparison {
-    case  0: return bisectPoint, nil
+    case  0: return true, bisectPoint, nil
     case  1: upperBound = bisectPoint
     case -1: lowerBound = bisectPoint + int64(len(bisectingDomainName)) + 1
     }
