@@ -1,5 +1,8 @@
 package main
 
+// TODO: assert that the lines that contain domain names are contiguous block
+//   If not, throw an error.
+
 import (
   "os"
   "log"

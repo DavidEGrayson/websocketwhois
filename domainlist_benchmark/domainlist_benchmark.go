@@ -2,16 +2,19 @@ package main
 
 import (
   "fmt"
-  "../zonefile"
+  "../domainlist"
   "log"
 )
 
 
 func main() {
   fmt.Println("benchmarking...")
-  file, err := zonefile.Open("../data/org.zone")
+  file, err := domainlist.Open("data/org.domains")
   if err != nil {
     log.Fatal(err);
   }
-  file.Find("graysonfamily.org")
+  _, err = file.Find("graysonfamily.org")
+  if err != nil {
+    log.Fatal(err)
+  }
 }
