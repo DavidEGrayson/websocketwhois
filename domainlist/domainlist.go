@@ -31,6 +31,7 @@ func Open(name string) (file *File, err error) {
 type File struct {
   osFile *os.File
   size int64
+  buffer []byte
 }
 
 func (f *File) Close() error {
@@ -43,6 +44,8 @@ func (f *File) setup() (err error) {
     return
   }
   f.size = info.Size()
+
+  f.buffer = make([]byte, 80)
   return
 }
 
@@ -50,44 +53,44 @@ func (f *File) setup() (err error) {
 // TODO: Consider forcing the beginning of the file to have a newline.
 // Then we can get rid of all the checks for offset == 0 in this method.
 // Only do it if the benchmarks get noticeably faster!
-func goBackToStartOfLine(osFile * os.File, currentOffset int64) (offset int64, err error) {
+func (f *File) goBackToStartOfLine(currentOffset int64) (offset int64, err error) {
   offset = currentOffset
 
   if (offset == 0) { return }
 
-  var byteslice []byte
+  var buffer []byte
   if (offset < 80) {
 
-    byteslice = make([]byte, offset)
+    buffer = f.buffer[0:offset]
 
-    _, err = osFile.Seek(0, 0)
+    _, err = f.osFile.Seek(0, 0)
     if err != nil { return }
 
-    _, err = osFile.Read(byteslice)
+    _, err = f.osFile.Read(buffer)
     if err != nil { return }
     
-    for i := 1; i < len(byteslice); i++ {
-      c := byteslice[len(byteslice) - i - 1]
+    for i := 1; i < len(buffer); i++ {
+      c := buffer[len(buffer) - i - 1]
       if c == '\n' {
-        return osFile.Seek(int64(-i), 1)
+        return f.osFile.Seek(int64(-i), 1)
       }
     }
-    return osFile.Seek(0, 0)
+    return f.osFile.Seek(0, 0)
 
   } else {
 
-    byteslice = make([]byte, 80) // TODO: try making this in advance
-    
-    _, err = osFile.Seek(-80, 1)
+    buffer = f.buffer
+
+    _, err = f.osFile.Seek(-80, 1)
     if err != nil { return }
     
-    _, err = osFile.Read(byteslice)
+    _, err = f.osFile.Read(buffer)
     if err != nil { return }
 
-    for i := 1; i < len(byteslice); i++ {
-      c := byteslice[len(byteslice) - i - 1]
+    for i := 1; i < len(buffer); i++ {
+      c := buffer[len(buffer) - i - 1]
       if c == '\n' {
-        return osFile.Seek(int64(-i), 1)
+        return f.osFile.Seek(int64(-i), 1)
       }
     }
     return -1, errors.New("Domain list file has line longer than 80 bytes.")
@@ -120,7 +123,7 @@ func (f *File) Find(domainNameStr string) (offset int64, err error) {
     _, err := f.osFile.Seek(bisectPoint, 0)
     if err != nil { return -1, err }
 
-    bisectPoint, err = goBackToStartOfLine(f.osFile, bisectPoint)
+    bisectPoint, err = f.goBackToStartOfLine(bisectPoint)
     if err != nil { return -1, err }
 
     fragment := make([]byte, 80)
