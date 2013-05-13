@@ -61,6 +61,17 @@ afilias:
 		Some matches: A line like "Domain Name:ABC.INFO" for each match
 		Too many matches (>= 50):  Silently truncates result length to 50.
       If we get 50 results, we really should assume that some were truncated.
+
+swhoisd:
+  Example: whois.ax
+  
+  Question mark query: first line is like "swhoisd 3.0.5"
+
+  Main query: just send the domain name, with tld (e.g. "web.ax")
+    swhoisd will return a lot of junk!  You must search for a line like
+      "Domain Name:              web.ax"
+    where the part after the spaces exactly matches what you would expect.
+    That will tell you whether it is taken or not.
 		  
 
 ootr:
@@ -158,17 +169,6 @@ arnes:
     Taken:
       There will be line like "domain:                 gzg.si"
 
-
-swhoisd:
-  Example: whois.ax
-  
-  Question mark query: first line is like "swhoisd 3.0.5"
-
-  Main query: just send the domain name, with tld (e.g. "web.ax")
-    swhoisd will return a lot of junk!  You must search for a line like
-      "Domain Name:              web.ax"
-    where the part after the spaces exactly matches what you would expect.
-    That will tell you whether it is taken or not.
 
 nef:
   Example: whois.biz.ua

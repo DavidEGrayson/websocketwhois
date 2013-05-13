@@ -163,6 +163,9 @@ func (s *serverInfo) identify() {
       s.Protocol = "afilias"
     }
 
+  case strings.HasPrefix(questionMarkResult[0], "swhoisd"):
+    s.Protocol = "swhoisd"
+
   case questionMarkResult.isOneLiner("out of this registry"):
     s.Protocol = "ootr"
 
@@ -174,9 +177,6 @@ func (s *serverInfo) identify() {
 
   case len(questionMarkResult) > 20 && questionMarkResult[1] == "% This is ARNES whois database":
     s.Protocol = "arnes"
-
-  case strings.HasPrefix(questionMarkResult[0], "swhoisd"):
-    s.Protocol = "swhoisd"
 
   case questionMarkResult[0] == "No entries found.":
     s.Protocol = "nef"
