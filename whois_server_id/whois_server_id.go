@@ -4,7 +4,19 @@ import (
   "strings"
   "bufio"
   "os"
+  "log"
+  "fmt"
+  "io"
+  "sort"
+  "encoding/json"
 )
+
+// This represents a line from tld_serv_list, which came from the
+// standard unix whois utility. 
+type upstreamSuffixInfo struct {
+  name, server, note string
+}
+
 
 func main() {
   initData()

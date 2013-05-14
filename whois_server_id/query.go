@@ -4,12 +4,14 @@ import (
   "net"
   "bufio"
   "strings"
+  "time"
+  "fmt"
 )
 
 type queryResult []string
 
 func (r *queryResult) String() string {
-  return strings.Join(queryResult, "\\n")
+  return strings.Join(*r, "\\n")
 }
 
 func (r *queryResult) lastParagraphJoin() string {
