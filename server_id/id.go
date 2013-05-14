@@ -18,7 +18,8 @@ import (
 type serverInfo struct {
   Name, note, Protocol string
   Suffixes []string
-  NotExistRegexp *regexp.Regexp
+  NotExistRegexp, ExistRegexp *regexp.Regexp
+  
   log *log.Logger
 }
 
@@ -106,11 +107,19 @@ func (s *serverInfo) identifyGenericProtocol() (err error) {
   if err != nil { return err }
 
   s.NotExistRegexp, err = analyzeNotExistResponse(queryResult)
-  if (s.NotExistRegexp == nil) {
-    return err
-  }
-
+  if (err != nil) { return err }
   s.log.Println("Not-exist response matches ", s.NotExistRegexp)
+
+  domainNameProbablyExist := "aa" + suffix
+  queryResult, err = s.query(domainNameProbablyExist)
+  if err != nil { return err }
+
+  s.ExistRegexp, err = analyzeExistResponse(queryResult, domainNameProbablyExist)
+  if (err != nil) { return err }
+  s.log.Println("Exist response matches ", s.ExistRegexp)
+  
+  s.Protocol = "generic"
+
 
   return nil
 }

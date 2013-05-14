@@ -144,6 +144,7 @@ func sortServers(serverMap map[string] *serverInfo) []*serverInfo {
 func serialIdentifyAll(servers []*serverInfo) {
   for _, server := range servers {
     (*server).identify()
+    fmt.Println() // put space between servers in the log
   }
 }
 
