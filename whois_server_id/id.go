@@ -105,7 +105,7 @@ func (s *serverInfo) identifyWs20() {
   }
 
   str := result.lastParagraphJoin()
-  str = strings.ToLower(str);
+  str = strings.ToLower(str)
 
   if strings.HasPrefix(str, "the registry database contains only") {
     re := regexp.MustCompile("\\.[\\.a-z]+")
@@ -148,7 +148,8 @@ func compileAll(s []string) []*regexp.Regexp {
 
 func initData() {
   notExistStrings := []string {
-    "no entries found/i",
+    "(?i)no entries found",
+    "(?i)no matching record",
   }
   notExistPatterns = compileAll(notExistStrings)
 
