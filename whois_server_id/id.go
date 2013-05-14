@@ -30,15 +30,7 @@ type upstreamSuffixInfo struct {
 type serverInfo struct {
   Name, note, Protocol string
   Suffixes []string
-}
-
-func (s *serverInfo) log(v ...interface{}) {
-  v = append([]interface{}{ s.Name + ": " }, v...)
-  fmt.Println(v...)  
-}
-
-func (s *serverInfo) logf(format string, v ...interface{}) {
-  fmt.Printf(s.Name + ": " + format + "\n", v...)
+  log *log.Logger
 }
 
 type queryResult []string
@@ -74,7 +66,7 @@ func (s *serverInfo) query(query string) (queryResult, error) {
   addr := s.Name + ":43"
   conn, err := net.DialTimeout("tcp", addr, 40 * time.Second)
   if err != nil {
-    s.log("Error dialing", err)
+    s.log.Println("Error dialing", err)
     return nil, err
   }
   defer conn.Close()
@@ -82,9 +74,11 @@ func (s *serverInfo) query(query string) (queryResult, error) {
 
   _, err = fmt.Fprint(conn, query + "\r\n")
   if err != nil {
-    s.log("Error sending", err)
+    s.log.Println("Error sending", err)
     return nil, err
   }
+
+  // TODO: fix this to return the remainder even if the server doesn't send a newline
 
   reader := bufio.NewReader(conn)
   result := queryResult([]string {})
@@ -93,13 +87,16 @@ func (s *serverInfo) query(query string) (queryResult, error) {
     if err == io.EOF {
       break
     } else if err != nil {
-      s.log("Error reading line:", err);
+      s.log.Println("Error reading line:", err);
       return nil, err
     }
     str = strings.TrimRight(str, "\r\n")
 
     result = append(result, str)
   }
+
+  // TODO: switch to go 1.1 and use scanner so we can handle
+  // it when the server doesn't send a linefeed lastly
 
   return result, nil
 }
@@ -111,7 +108,7 @@ func (s *serverInfo) identifyWs20() {
   // query.
   result, err := s.query("sum domain -")
   if err != nil {
-    s.log("Failed to get Whois Server Version 2.0 help screen.");
+    s.log.Println("Failed to get Whois Server Version 2.0 help screen.");
     return
   }
 
@@ -126,20 +123,20 @@ func (s *serverInfo) identifyWs20() {
     // TODO: print a warning message if we the followling line REMOVES any suffixes from s
     s.Suffixes = claimedSuffixes
   } else {
-    s.log("The last paragraph did not talk about the registry's scope.  It was simply: " + str);
+    s.log.Println("The last paragraph did not talk about the registry's scope.  It was simply: " + str);
   }
 }
 
 func (s *serverInfo) detectAfilias() bool {
   result, err := s.query("help")
   if err != nil {
-    s.log("Failed to get afilias help screen.");
+    s.log.Println("Failed to get afilias help screen.");
     return false
   }
 
   str := strings.Join(result, " ");
   if !strings.Contains(str, "afilias") {
-    s.log("Looked like an afilias server but did not return 'afilias' anywhere in the help screen.")
+    s.log.Println("Looked like an afilias server but did not return 'afilias' anywhere in the help screen.")
     return false
   }
 
@@ -205,18 +202,19 @@ func (s *serverInfo) identifyGenericProtocol() {
   suffix := s.Suffixes[0]
 
   domainNameProbablyNotExist := randomDomain(suffix)
-  s.log("Asking about " + domainNameProbablyNotExist)
+  s.log.Println("Asking about " + domainNameProbablyNotExist)
   queryResult, err := s.query(domainNameProbablyNotExist)
   if err != nil { return }
 
   counts := patternsMatchCounts(queryResult, notExistPatterns)
 
   if (len(counts) == 0) {
-    s.log("non-existence response not recognized:")
-    s.logResult(queryResult)
+    s.log.Println("non-existence response not recognized:")
+    s.log.Println(queryResult)
+    //s.logResult(queryResult)
   }
 
-  s.logf("Number of not-exist patterns matched: %d", len(counts))
+  s.log.Printf("Number of not-exist patterns matched: %d\n", len(counts))
 
 }
 
@@ -224,7 +222,7 @@ func (s *serverInfo) identify() {
   // Can we get a help screen?
   questionMarkResult, err := s.query("?")
   if err != nil {
-    s.log("Failed to get help.")
+    s.log.Println("Failed to get help.")
     return
   }
   //resultJoined := strings.Join(questionMarkResult, " ")
@@ -318,6 +316,7 @@ func groupByServer(suffixes []upstreamSuffixInfo) map[string] *serverInfo {
       servers[suffix.server] = server
       server.Name = suffix.server
       server.note = suffix.note
+      server.log = log.New(os.Stdout, fmt.Sprintf("%s: ", server.Name), log.Flags())
     }
 
     if server.note != suffix.note {
