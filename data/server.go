@@ -3,7 +3,6 @@ package data
 import (
   "encoding/json"
   "os"
-  "regexp"
   "log"
   "../errorwrap"
   "io/ioutil"
@@ -12,7 +11,7 @@ import (
 type Server struct {
   Name, Protocol string
   Suffixes []string
-  NotExistRegexp, ExistRegexp *regexp.Regexp
+  NotExistRegexp, ExistRegexp *JsonRegexp
 }
 
 type OutputFile struct {

@@ -149,8 +149,8 @@ func (s *Server) identify() {
 
   if (s.Hint != nil && s.Hint.Protocol != "") {
     s.Protocol = s.Hint.Protocol
-    s.NotExistRegexp = s.Hint.NotExistRegexp
-    s.ExistRegexp = s.Hint.ExistRegexp
+    s.NotExistRegexp = (*regexp.Regexp)(s.Hint.NotExistRegexp)
+    s.ExistRegexp = (*regexp.Regexp)(s.Hint.ExistRegexp)
     s.log.Println("Protocol (from hint) is %s, %s, %s",
       s.Protocol, s.NotExistRegexp, s.ExistRegexp)
     return

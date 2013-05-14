@@ -154,8 +154,8 @@ func (s *Server) extractOutput() *data.Server {
   r.Name = s.Name
   r.Suffixes = s.Suffixes
   r.Protocol = s.Protocol
-  r.NotExistRegexp = s.NotExistRegexp
-  r.ExistRegexp = s.ExistRegexp
+  r.NotExistRegexp = (*data.JsonRegexp)(s.NotExistRegexp)
+  r.ExistRegexp = (*data.JsonRegexp)(s.ExistRegexp)
   return &r
 }
 
