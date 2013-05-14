@@ -10,13 +10,15 @@ var notExistPatterns, existPatterns patternSet
 
 func initData() {
   notExistPatterns = newPatternSet([]string {
-    "(?i)^no entries found$",
+    "(?i)^no entries found.?$",
     "(?i)^no matching record$",
     "(?i)^Domain (.+) not registe?red.$",
+    "(?i)% No entries found for the selected source\\(s\\).$",
   })
 
   existPatterns = newPatternSet([]string {
     "(?i)^domain +name: +(.+)$",
+    `(?i)^domain:\s*(.+)$`,
     "(?i)^ *Complete Domain Name\\.+: *(.+)$",
   })
 }

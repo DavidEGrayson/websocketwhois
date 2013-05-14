@@ -19,6 +19,8 @@ type upstreamSuffixInfo struct {
 
 
 func main() {
+  log.SetFlags(0)  // don't put the date in the output
+
   initData()
 
   upstreamSuffixInfos := readUpstreamSuffixInfos("tld_serv_list")
