@@ -1,5 +1,10 @@
 package main
 
+// TODO: Since servers only has info about actual whois servers, we
+// should also pull out the information about TLDs that have no server
+// or only have a web interface, so we can show it to our users should
+// they request it.  That info is in upstreamSuffixInfos.
+
 import (
   "strings"
   "os"
@@ -7,11 +12,12 @@ import (
   "fmt"
   "sort"
   "../data"
+  "flag"
 )
 
-func main() {
-  log.SetFlags(0)  // don't put the date in the output
+var servers []*Server
 
+func loadData() {
   responseAnalysisInit()
 
   var err error
@@ -25,18 +31,51 @@ func main() {
 
   removeUnusableServers(serverMap)
 
-  servers := sortServers(serverMap)
+  servers = sortServers(serverMap)
+}
 
-  // TODO: Since servers only has info about actual whois servers, we
-  // should also pull out the information about TLDs that have no server
-  // or only have a web interface, so we can show it to our users should
-  // they request it.  That infor is in upstreamSuffixInfos.
+func main() {
+  log.SetFlags(0)  // don't put the date in the output
+ 
+  loadData()
 
-  serialIdentifyAll(servers)       // For debugging.
-  //parallelIdentifyAll(servers);    // For production.
+  singleServer := flag.String("s", "", "Only identify a single server.")
+  parallelMode := flag.Bool("p", false, "Identify in parallel (much faster)")
+  flag.Parse()
 
-  output := extractOutput(servers)
-  data.ServersWrite(output)
+  if flag.NArg() != 0 {
+    fmt.Fprintf(os.Stderr, "Valid arguments to %s are:\n", os.Args[0])
+    flag.PrintDefaults()
+    os.Exit(1)
+  }
+
+  if *singleServer != "" {
+
+    var server *Server
+    for _, s := range servers {
+      if s.Name == *singleServer {
+        server = s
+      }
+    }
+
+    if server == nil {
+      log.Fatalf("Server %s not found." , singleServer)
+    }
+
+    log.Printf("Only identifying a single server: %s.", *singleServer);
+    server.identify()
+
+  } else {
+
+    if *parallelMode {
+      parallelIdentifyAll(servers)
+    } else {
+      serialIdentifyAll(servers)
+    }
+
+    output := extractOutput(servers)
+    data.ServersWrite(output)
+  }
 }
 
 func groupByServer(suffixes []data.DebianSuffixInfo) map[string] *Server {
