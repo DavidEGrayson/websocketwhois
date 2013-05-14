@@ -21,7 +21,7 @@ func responseAnalysisInit() {
 
   existPatterns = newPatternSet([]string {
     `(?i)^domain +name: *(\S+)\s*$`,
-    `(?i)^domain:\s*(\S+)\s*$`,
+    `(?i)^domain\s*:\s*(\S+)\s*$`,
     `(?i)^ *complete domain name\.+: *(\S+)\s*$`,
   })
 }
