@@ -2,29 +2,33 @@ package main
 
 import (
   "regexp"
+  "errors"
+  "fmt"
 )
 
-var notExistPatterns []*regexp.Regexp
-var existPatterns []*regexp.Regexp
+var notExistPatterns, existPatterns patternSet
 
 func initData() {
-  notExistStrings := []string {
+  notExistPatterns = newPatternSet([]string {
     "(?i)no entries found",
     "(?i)no matching record",
-  }
-  notExistPatterns = compileAll(notExistStrings)
+  })
 
-  existStrings := []string {
+  existPatterns = newPatternSet([]string {
     "domain +name: +(.+)/i",
+  })
+}
+
+func analyzeNotExistResponse(r queryResult) (*regexp.Regexp, error) {
+  notExistScore := notExistPatterns.score(r)
+  existScore := existPatterns.score(r)
+
+  if (notExistScore.MatchCount == 1 && existScore.MatchCount == 0) {
+    // Totally unambiguous success.  This is a not-exist reponse.
+    return notExistScore.FirstMatchedPattern, nil
   }
-  existPatterns = compileAll(existStrings)
-}
 
-var bytelist = []byte {
-  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-  'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-  // Do NOT include '-' in this list because we are tryin to generate a domain
-  // name that probably does not exist but would be valid, and a hyphen
-  // in certain spots is not allowed.
-}
+  msg := fmt.Sprintf("Expected response to indicate domain non-existence, but it did not (%d,%d): %s", notExistScore.MatchCount, existScore.MatchCount, r)
 
+  return nil, errors.New(msg)
+}

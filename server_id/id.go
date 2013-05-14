@@ -12,12 +12,13 @@ import (
   "strings"
   "regexp"
   "math/rand"
-  "errors"
+  //"errors"
 )
 
 type serverInfo struct {
   Name, note, Protocol string
   Suffixes []string
+  NotExistRegexp *regexp.Regexp
   log *log.Logger
 }
 
@@ -63,6 +64,14 @@ func (s *serverInfo) detectAfilias() (success bool) {
   return true
 }
 
+var bytelist = []byte {
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+  'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+  // Do NOT include '-' in this list because we are tryin to generate a domain
+  // name that probably does not exist but would be valid, and a hyphen
+  // in certain spots is not allowed.
+}
+
 func randomDomain(suffix string) string {
   length := 50
   str := ""
@@ -87,45 +96,30 @@ func patternsMatchCounts(strings []string, patterns []*regexp.Regexp) map[*regex
   return patternMap
 }
 
-func (s *serverInfo) identifyGenericNotExistResponse(suffix string) error {
+func (s *serverInfo) identifyGenericProtocol() (err error) {
+  
+  suffix := s.Suffixes[0]
 
   domainNameProbablyNotExist := randomDomain(suffix)
   s.log.Println("Asking about " + domainNameProbablyNotExist)
   queryResult, err := s.query(domainNameProbablyNotExist)
   if err != nil { return err }
 
-  counts := patternsMatchCounts(queryResult, notExistPatterns)
-
-  if (len(counts) == 0) {
-    return errors.New("non-existence response not recognized: " + queryResult.String())
+  s.NotExistRegexp, err = analyzeNotExistResponse(queryResult)
+  if (s.NotExistRegexp == nil) {
+    return err
   }
+
+  s.log.Println("Not-exist response matches ", s.NotExistRegexp)
 
   return nil
-}
-
-func (s *serverInfo) identifyGenericProtocol() {
-  
-  suffix := s.Suffixes[0]
-
-  err := s.identifyGenericNotExistResponse(suffix)
-  if err != nil {
-    s.log.Println(err)
-    return
-  }
-
-  //err = s.identifyGenericExistResponse(suffix)
-  //if err != nil {
-  //  s.log(err)
-  //  return
-  //}
-
 }
 
 func (s *serverInfo) identify() {
   // Can we get a help screen?
   questionMarkResult, err := s.query("?")
   if err != nil {
-    s.log.Println("Failed to get help.")
+    s.log.Println("Error with question mark query.")
     return
   }
   //resultJoined := strings.Join(questionMarkResult, " ")
@@ -147,7 +141,15 @@ func (s *serverInfo) identify() {
     s.Protocol = "swhoisd"
 
   default:
-    s.identifyGenericProtocol()
+    err = s.identifyGenericProtocol()
+  }
+
+  if (err != nil) {
+    s.log.Println(err)
+  }
+
+  if (s.Protocol == "") {
+    s.log.Println("Failed to identify protocol.")
   }
 }
 
