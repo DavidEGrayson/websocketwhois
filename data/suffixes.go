@@ -3,8 +3,6 @@ package data
 import (
   "io/ioutil"
   "encoding/json"
-  "fmt"
-  "log"
 )
 
 type Suffix struct {
@@ -17,12 +15,8 @@ func SuffixesRead() (map[string]Suffix, error) {
   suffixes_bytes, err := ioutil.ReadFile(Directory + "/suffixes.json")
   if err != nil { return nil, err }
 
-  err = json.Unmarshal(suffixes_bytes, suffixes)
-  if err == nil { return nil, err }
-
-  fmt.Println(suffixes)
-
-  log.Fatal("trying to debug SuffixesRead")
+  err = json.Unmarshal(suffixes_bytes, &suffixes)
+  if err != nil { return nil, err }
 
   return suffixes, nil
 }
