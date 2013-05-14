@@ -1,5 +1,8 @@
 package main
 
+// TODO: check all uses of io.EOF in this whole project and make sure they are OK.
+//   Often a Read function will return io.EOF along with some data!
+
 // TODO: Instead of using that sketchy tld_serv_list from the whois utility,
 // get the root info from the IANA root zone file:
 // http://www.iana.org/domains/root/files
@@ -80,24 +83,16 @@ func (s *serverInfo) query(query string) (queryResult, error) {
 
   // TODO: fix this to return the remainder even if the server doesn't send a newline
 
-  reader := bufio.NewReader(conn)
-  result := queryResult([]string {})
-  for {
-    str, err := reader.ReadString('\n')
-    if err == io.EOF {
-      break
-    } else if err != nil {
-      s.log.Println("Error reading line:", err);
-      return nil, err
-    }
-    str = strings.TrimRight(str, "\r\n")
-
-    result = append(result, str)
+  scanner := bufio.NewScanner(conn);
+  result := queryResult([]string{})
+  for scanner.Scan() {
+    result = append(result, scanner.Text())
   }
-
-  // TODO: switch to go 1.1 and use scanner so we can handle
-  // it when the server doesn't send a linefeed lastly
-
+  if scanner.Err() != nil {
+    s.log.Println("Error scanning response: ", scanner.Err())
+    return nil, scanner.Err()
+  }
+  
   return result, nil
 }
 
