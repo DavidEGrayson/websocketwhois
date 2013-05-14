@@ -2,20 +2,12 @@ package main
 
 import (
   "strings"
-  "bufio"
   "os"
   "log"
   "fmt"
-  "io"
   "sort"
-  "encoding/json"
+  "../data"
 )
-
-// This represents a line from tld_serv_list, which came from the
-// standard unix whois utility. 
-type upstreamSuffixInfo struct {
-  name, server, note string
-}
 
 
 func main() {
@@ -23,11 +15,10 @@ func main() {
 
   initData()
 
-  upstreamSuffixInfos := readUpstreamSuffixInfos("tld_serv_list")
-  
-  //fmt.Println(upstreamSuffixInfos)
+  debianSuffixInfos, err := data.DebianSuffixInfosRead()
+  if (err != nil) { log.Fatal(err) }
 
-  serverMap := groupByServer(upstreamSuffixInfos)
+  serverMap := groupByServer(debianSuffixInfos)
 
   removeUnusableServers(serverMap)
 
@@ -41,14 +32,15 @@ func main() {
   serialIdentifyAll(servers) // For debugging.
   //parallelIdentifyAll(servers);             // For production.
 
-  writeOutput(servers)
+  output := extractOutput(servers)
+  data.ServersWrite(output)
 }
 
-func groupByServer(suffixes []upstreamSuffixInfo) map[string] *serverInfo {
-  servers := map[string] *serverInfo { }
+func groupByServer(suffixes []data.DebianSuffixInfo) map[string] *Server {
+  servers := map[string] *Server { }
   for _, suffix := range(suffixes) {
 
-    if suffix.server == "" || suffix.note == "WEB" || suffix.note == "NONE" {
+    if suffix.Server == "" || suffix.Note == "WEB" || suffix.Note == "NONE" {
       // This entry does not have an actual whois server; ignore it.
       continue
     }
@@ -57,85 +49,41 @@ func groupByServer(suffixes []upstreamSuffixInfo) map[string] *serverInfo {
     // at the bottom, like -tel.  I am not sure why.  Some of them
     // seem to be duplicate entries.  Skip them for now.
     // TODO: figure out what the - means.
-    if strings.HasPrefix(suffix.name, "-") {
+    if strings.HasPrefix(suffix.Name, "-") {
       continue
     }
 
-    server := servers[suffix.server]
+    server := servers[suffix.Server]
 
     if server == nil {
-      server = &serverInfo{}
-      servers[suffix.server] = server
-      server.Name = suffix.server
-      server.note = suffix.note
+      server = &Server{}
+      servers[suffix.Server] = server
+      server.Name = suffix.Server
+      server.DebianNote = suffix.Note
       server.log = log.New(os.Stdout, fmt.Sprintf("%s: ", server.Name), log.Flags())
     }
 
-    if server.note != suffix.note {
+    if server.DebianNote != suffix.Note {
       log.Fatalf("Conflicting notes for %s: %s and %s.",
-        server.Name, server.note, suffix.note)
+        server.Name, server.DebianNote, suffix.Note)
     }
     
-    server.Suffixes = append(server.Suffixes, suffix.name)
+    server.Suffixes = append(server.Suffixes, suffix.Name)
   }
 
   return servers
 }
 
-func readUpstreamSuffixInfos(filename string) []upstreamSuffixInfo {
-  upstreamSuffixInfos := make([]upstreamSuffixInfo, 0)
-
-  file, err := os.Open("tld_serv_list")
-  if err != nil {
-	  log.Fatal("Error opening file.", err)
-  }
-  defer file.Close()
-  reader := bufio.NewReader(file)
-
-  for {
-    line, err := reader.ReadString('\n');
-    if (err == io.EOF) {
-      break
-    }
-    if (err != nil) {
-      log.Fatal("Error reading line.", err);
-    }
-
-    line = strings.Split(line, "#")[0]     // Remove comments
-    fields := strings.Fields(line)         // Split by whitespace.
-    
-    var suffix upstreamSuffixInfo
-
-    if len(fields) == 0 {
-      continue   // Empty line.
-    }
-
-    suffix.name = fields[0]
-    attrs := fields[1:]
-    for _, attr := range attrs {
-      if attr[0] >= 'A' && attr[0] <= 'Z' {
-        suffix.note = attr
-      } else {
-        suffix.server = attr
-      }
-    }
-
-    upstreamSuffixInfos = append(upstreamSuffixInfos, suffix)
-  }
-
-  return upstreamSuffixInfos
-}
-
 
 // In Ruby this would just be serverMap.values.sort_by(&:name).
-func sortServers(serverMap map[string] *serverInfo) []*serverInfo {
+func sortServers(serverMap map[string] *Server) []*Server {
   serverNames := make([]string, 0)
   for name, _ := range serverMap {
     serverNames = append(serverNames, name)
   }
   sort.Strings(serverNames)
   
-  serverSlice := make([]*serverInfo, len(serverNames))
+  serverSlice := make([]*Server, len(serverNames))
   for i, name := range serverNames {
     serverSlice[i] = serverMap[name]
   }
@@ -143,7 +91,25 @@ func sortServers(serverMap map[string] *serverInfo) []*serverInfo {
   return serverSlice
 }
 
-func serialIdentifyAll(servers []*serverInfo) {
+func extractOutput(servers []*Server) []*data.Server {
+  r := make([]*data.Server, len(servers))
+  for i, server := range servers {
+    r[i] = server.extractOutput()
+  }
+  return r
+}
+
+func (s *Server) extractOutput() *data.Server {
+  r := data.Server{}
+  r.Name = s.Name
+  r.Suffixes = s.Suffixes
+  r.Protocol = s.Protocol
+  r.NotExistRegexp = s.NotExistRegexp
+  r.ExistRegexp = s.ExistRegexp
+  return &r
+}
+
+func serialIdentifyAll(servers []*Server) {
   for _, server := range servers {
     server.identify()
     fmt.Println() // put space between servers in the log
@@ -154,11 +120,11 @@ func serialIdentifyAll(servers []*serverInfo) {
   }
 }
 
-func parallelIdentifyAll(servers []*serverInfo) {
+func parallelIdentifyAll(servers []*Server) {
   ch := make(chan bool)
 
   // Define the function we want to run in parallel.
-  process := func(server *serverInfo) {
+  process := func(server *Server) {
     (*server).identify()
     ch <- true
   }
@@ -169,31 +135,3 @@ func parallelIdentifyAll(servers []*serverInfo) {
   // Wait for all goroutines to finish.
   for _, _ = range servers { <- ch }
 }
-
-type OutputFile struct {
-  Servers []*serverInfo
-}
-
-func writeOutput(servers []*serverInfo) {
-  output := OutputFile { }
-
-  output.Servers = servers
-
-  file, err := os.Create("whois_database.json")
-  if err != nil {
-	  log.Fatal("Error opening output file.", err)
-  }
-  defer file.Close()
-
-  //data, err := json.Marshal(output)  // For production.
-  data, err := json.MarshalIndent(output, "", "  ")  // For development.
-  if err != nil {
-    log.Fatal("Error marshalling json data.", err)
-  }
-
-  n, err := file.Write(data)
-  if err != nil || n != len(data) {
-    log.Fatal("Error writing to output file.", err)
-  }
-}
-

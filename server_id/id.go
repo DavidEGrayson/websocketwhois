@@ -8,24 +8,31 @@ package main
 // http://www.iana.org/domains/root/files
 
 import (
-  "log"
   "strings"
   "regexp"
   "math/rand"
-  //"errors"
+  "../data"
+  "log"
 )
 
-type serverInfo struct {
-  Name, note, Protocol string
+type Server struct {
+  // Identity
+  Name string
   Suffixes []string
+
+  Hints data.Server   // Hints from the maintainers of this program.
+  DebianNote string   // Info from the Debian whois utility.
+
+  // The fields we want to compute.
+  Protocol string
   NotExistRegexp, ExistRegexp *regexp.Regexp
-  
+
   log *log.Logger
 }
 
 // Whois Server Version 2.0
 // This is a very important protocol and the servers that use will tell you what TLDs they have.
-func (s *serverInfo) identifyWs20() {
+func (s *Server) identifyWs20() {
   // Do an invalid query just so we can see the notes at the end of the
   // query.
   result, err := s.query("sum domain -")
@@ -49,7 +56,7 @@ func (s *serverInfo) identifyWs20() {
   }
 }
 
-func (s *serverInfo) detectAfilias() (success bool) {
+func (s *Server) detectAfilias() (success bool) {
   result, err := s.query("help")
   if err != nil {
     s.log.Println("Failed to get afilias help screen.");
@@ -97,7 +104,7 @@ func patternsMatchCounts(strings []string, patterns []*regexp.Regexp) map[*regex
   return patternMap
 }
 
-func (s *serverInfo) identifyGenericProtocol() (err error) {
+func (s *Server) identifyGenericProtocol() (err error) {
   
   suffix := s.Suffixes[0]
 
@@ -124,7 +131,7 @@ func (s *serverInfo) identifyGenericProtocol() (err error) {
   return nil
 }
 
-func (s *serverInfo) identify() {
+func (s *Server) identify() {
   // Can we get a help screen?
   questionMarkResult, err := s.query("?")
   if err != nil {
@@ -167,7 +174,7 @@ func (s *serverInfo) identify() {
 
 // TODO: store this info as a JSON file instead, like the
 //   "human input" JSON file.
-func removeUnusableServers(serverMap map[string] *serverInfo) {
+func removeUnusableServers(serverMap map[string] *Server) {
   // TODO: get zone file access for all these weird servers, or at least the important ones.
 
   weirdServers := []string {

@@ -41,7 +41,7 @@ func (r *queryResult) isOneLiner(line string) bool {
 // of the provided string followed by "\r\n".  Reads data back from the server and
 // returns it as a queryResult,  which is really just a slice of strings where each
 // string is a line and the line-ending characters have been removed.
-func (s *serverInfo) query(query string) (queryResult, error) {
+func (s *Server) query(query string) (queryResult, error) {
   conn, err := net.DialTimeout("tcp", s.Name + ":43", 40 * time.Second)
   if err != nil {
     s.log.Println("Error dialing", err)
