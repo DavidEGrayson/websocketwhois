@@ -1,5 +1,7 @@
 package main
 
+// TODO: what is the proper naming convention for files like patternset.go?
+
 import (
   "regexp"
 )
