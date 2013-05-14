@@ -16,6 +16,7 @@ import (
   "sort"
   "regexp"
   "encoding/json"
+  "math/rand"
   //"runtime"
   //"time"
 )
@@ -34,6 +35,10 @@ type serverInfo struct {
 func (s *serverInfo) log(v ...interface{}) {
   v = append([]interface{}{ s.Name + ": " }, v...)
   fmt.Println(v...)  
+}
+
+func (s *serverInfo) logf(format string, v ...interface{}) {
+  fmt.Printf(s.Name + ": " + format + "\n", v...)
 }
 
 type queryResult []string
@@ -141,6 +146,75 @@ func (s *serverInfo) detectAfilias() bool {
   return true
 }
 
+var notExistPatterns []*regexp.Regexp
+var existPatterns []*regexp.Regexp
+
+func compileAll(s []string) []*regexp.Regexp {
+  r := make([]*regexp.Regexp, len(s))
+  for i, str := range s {
+    r[i] = regexp.MustCompile(str)
+  }
+  return r
+}
+
+func initData() {
+  notExistStrings := []string {
+    "no entries found/i",
+  }
+  notExistPatterns = compileAll(notExistStrings)
+
+  existStrings := []string {
+    "domain +name: +(.+)/i",
+  }
+  existPatterns = compileAll(existStrings)
+}
+
+var bytelist = []byte {
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+  'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+  // Do NOT include '-' in this list because we are tryin to generate a domain
+  // name that probably does not exist but would be valid, and a hyphen
+  // in certain spots is not allowed.
+}
+
+func randomDomain(suffix string) string {
+  length := 50
+  str := ""
+  for i := 0; i < length; i++ {
+    str += string( bytelist[ rand.Intn(len(bytelist)) ] )
+  }
+  return str + suffix
+}
+
+func patternsMatchCounts(strings []string, patterns []*regexp.Regexp) map[*regexp.Regexp] int {
+  patternMap := make(map[*regexp.Regexp] int)
+  for _, line := range strings {
+    for _, pattern := range patterns {
+      if pattern.MatchString(line) {
+        count, ok := patternMap[pattern]
+        if !ok { count = 0 }
+        count += 1
+        patternMap[pattern] = count
+      }
+    }
+  }
+  return patternMap
+}
+
+func (s *serverInfo) identifyGenericProtocol() {
+  suffix := s.Suffixes[0]
+
+  domainNameProbablyNotExist := randomDomain(suffix)
+  s.log("Asking about " + domainNameProbablyNotExist)
+  queryResult, err := s.query(domainNameProbablyNotExist)
+  if err != nil { return }
+
+  counts := patternsMatchCounts(queryResult, notExistPatterns)
+  s.logf("Number of not-exist patterns matched: %d", len(counts))
+
+  s.log(counts)
+}
+
 func (s *serverInfo) identify() {
   // Can we get a help screen?
   questionMarkResult, err := s.query("?")
@@ -148,7 +222,7 @@ func (s *serverInfo) identify() {
     s.log("Failed to get help.")
     return
   }
-  resultJoined := strings.Join(questionMarkResult, " ")
+  //resultJoined := strings.Join(questionMarkResult, " ")
 
   switch {
 
@@ -166,29 +240,8 @@ func (s *serverInfo) identify() {
   case strings.HasPrefix(questionMarkResult[0], "swhoisd"):
     s.Protocol = "swhoisd"
 
-  case questionMarkResult.isOneLiner("out of this registry"):
-    s.Protocol = "ootr"
-
-  case strings.HasPrefix(resultJoined, "Incorrect domain name: "):
-    s.Protocol = "idn"
-
-  case questionMarkResult.isOneLiner("Incorrect Query or request for domain not managed by this registry."):
-    s.Protocol = "iqor"
-
-  case len(questionMarkResult) > 20 && questionMarkResult[1] == "% This is ARNES whois database":
-    s.Protocol = "arnes"
-
-  case questionMarkResult[0] == "No entries found.":
-    s.Protocol = "nef"
-
-  case strings.HasPrefix(questionMarkResult[0], "% puntCAT Whois Server"):
-    s.Protocol = "puntcat"
-  }
-
-  if (s.Protocol == "") {
-    s.log("Failed to determine protocol.");
-  } else {
-    s.log("protocol=", s.Protocol, " suffixes=", s.Suffixes);
+  default:
+    s.identifyGenericProtocol()
   }
 }
 
@@ -366,6 +419,8 @@ func writeOutput(servers []*serverInfo) {
 }
 
 func main() {
+  initData()
+
   upstreamSuffixInfos := readUpstreamSuffixInfos("tld_serv_list")
   
   //fmt.Println(upstreamSuffixInfos)
@@ -381,8 +436,8 @@ func main() {
   // or only have a web interface, so we can show it to our users should
   // they request it.  That infor is in upstreamSuffixInfos.
 
-  //serialIdentifyAll(sortServers(servers)) // For debugging.
-  parallelIdentifyAll(servers);             // For production.
+  serialIdentifyAll(servers) // For debugging.
+  //parallelIdentifyAll(servers);             // For production.
 
   writeOutput(servers)
 }
