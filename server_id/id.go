@@ -148,9 +148,15 @@ func (s *Server) identifyGenericProtocol() (err error) {
 func (s *Server) identify() {
 
   if (s.Hint != nil && s.Hint.Protocol != "") {
+
+    if s.Hint.Protocol == "generic" && s.Hint.NotExistRegexp == nil || s.Hint.ExistRegexp == nil {
+      s.log.Printf("Error: Hint says protocol=generic but did not specify regexps.")
+      return
+    }
+
     s.Protocol = s.Hint.Protocol
     s.NotExistRegexp = (*regexp.Regexp)(s.Hint.NotExistRegexp)
-    s.ExistRegexp = (*regexp.Regexp)(s.Hint.ExistRegexp)
+    s.ExistRegexp = (*regexp.Regexp)(s.Hint.ExistRegexp)    
     s.log.Printf("Protocol (from hint) is %s, %s, %s",
       s.Protocol, s.NotExistRegexp, s.ExistRegexp)
     return

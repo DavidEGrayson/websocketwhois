@@ -10,21 +10,23 @@ var notExistPatterns, existPatterns patternSet
 
 func responseAnalysisInit() {
   notExistPatterns = newPatternSet([]string {
-    `(?i)^no entries found.?$`,
-    `(?i)^no matching record$`,
-    `(?i)^domain (.+) not registe?red.$`,
-    `(?i)^% no entries found for the selected source\(s\).$`,
+    `(?i)^no entries found\.?$`,
+    `(?i)^no matching record\.?$`,
+    `(?i)^domain (.+) not registe?red\.$`,
+    `(?i)^% no entries found for the selected source\(s\)\.$`,
     `(?i)^% object (\S+) not found.$`,
     `(?i)^object does not exist$`,
     `(?i)^no entries found in the \.\S+ database`,
     `(?i)^sorry, but domain: "(\S+)", not found in database`,
     `(?i)^domain not found$`,
+    `(?i)^(.+) is available\.$`,
   })
 
   existPatterns = newPatternSet([]string {
     `(?i)^domain +name: *(\S+)\s*$`,
     `(?i)^domain\s*:\s*(\S+)\s*$`,
     `(?i)^ *complete domain name\.+: *(\S+)\s*$`,
+    `(?i)^Domain is not available or is reserved by the registry\.$`,
   })
 }
 

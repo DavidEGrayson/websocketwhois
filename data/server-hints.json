@@ -6,7 +6,12 @@
   },
   "whois.cira.ca": {
     "Protocol": "generic",
-    "NotExistRegexp": "(?i)domain status:\\s+available$",
-    "ExistRegexp": "(?i)domain status:\\s+registered$"
+    "NotExistRegexp": "(?i)^domain status:\\s+available$",
+    "ExistRegexp": "(?i)^domain status:\\s+registered$"
+  },
+  "whois.cmc.iq": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^domain status:\\s+available$",
+    "ExistRegexp": "(?i)^domain id:"
   }
 }
