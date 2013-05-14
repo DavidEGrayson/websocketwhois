@@ -1,4 +1,22 @@
 {
   ".biz.ua": { "ExampleExistingDomain": "a.biz.ua" },
   ".cat": { "ExampleExistingDomain": "lol.cat" }
+  ".nc": {
+    "ExampleExistingDomain": "cctld.nc"
+    "NameRestrictions": [
+      { Desc: "Names in the .nc TLD must be 3-250 characters long.",
+        MustMatch: "^.{3,250}$"
+      },
+      { Desc: "Names in the .nc TLD can not start or end with a hyphen.",
+        MustNotMatch: "(^-|-$)"
+      },
+      { Desc: "Names in the .nc TLD can have at most 63 consectuve non-hyphen characters.",
+        MustNotMatch: "[^-]{63}"
+      }
+    ]
+    "NameRestrictionsSource": {
+      "Title": "Article 15 of the .nc naming charter"
+      "Url": "http://www.domaine.nc/charte/charte-en-20100603.pdf"
+    }
+  }
 }
