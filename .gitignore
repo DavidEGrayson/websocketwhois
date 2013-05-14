@@ -2,5 +2,5 @@
 /server_id/server_id
 /zonefile_process/zonefile_process
 
-/server_id/whois_database.json
+/data/servers.json
 /private
