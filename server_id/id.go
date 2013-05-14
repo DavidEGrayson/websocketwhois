@@ -30,6 +30,9 @@ type Server struct {
   log *log.Logger
 }
 
+var suffixes map[string] data.Suffix;
+
+
 // Whois Server Version 2.0
 // This is a very important protocol and the servers that use will tell you what TLDs they have.
 func (s *Server) identifyWs20() {
@@ -89,6 +92,17 @@ func randomDomain(suffix string) string {
   return str + suffix
 }
 
+// Returns a domain name that is likely to exist.
+func likelyDomain(suffix string) string {
+  if suffixData, ok := suffixes[suffix]; ok {
+    if ex := suffixData.ExampleExistingDomain; ex != "" {
+      return ex
+    }
+  }
+
+  return "aa" + suffix
+}
+
 func patternsMatchCounts(strings []string, patterns []*regexp.Regexp) map[*regexp.Regexp] int {
   patternMap := make(map[*regexp.Regexp] int)
   for _, line := range strings {
@@ -117,7 +131,7 @@ func (s *Server) identifyGenericProtocol() (err error) {
   if (err != nil) { return err }
   s.log.Println("Not-exist response matches ", s.NotExistRegexp)
 
-  domainNameProbablyExist := "aa" + suffix
+  domainNameProbablyExist := likelyDomain(suffix)
   queryResult, err = s.query(domainNameProbablyExist)
   if err != nil { return err }
 

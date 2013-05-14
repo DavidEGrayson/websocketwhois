@@ -8,7 +8,7 @@ import (
 
 var notExistPatterns, existPatterns patternSet
 
-func initData() {
+func responseAnalysisInit() {
   notExistPatterns = newPatternSet([]string {
     "(?i)^no entries found.?$",
     "(?i)^no matching record$",

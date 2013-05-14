@@ -9,11 +9,14 @@ import (
   "../data"
 )
 
-
 func main() {
   log.SetFlags(0)  // don't put the date in the output
 
-  initData()
+  responseAnalysisInit()
+
+  var err error
+  suffixes, err = data.SuffixesRead()
+  if (err != nil) { log.Fatal(err) }
 
   debianSuffixInfos, err := data.DebianSuffixInfosRead()
   if (err != nil) { log.Fatal(err) }
@@ -29,8 +32,8 @@ func main() {
   // or only have a web interface, so we can show it to our users should
   // they request it.  That infor is in upstreamSuffixInfos.
 
-  serialIdentifyAll(servers) // For debugging.
-  //parallelIdentifyAll(servers);             // For production.
+  serialIdentifyAll(servers)       // For debugging.
+  //parallelIdentifyAll(servers);    // For production.
 
   output := extractOutput(servers)
   data.ServersWrite(output)
