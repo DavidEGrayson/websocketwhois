@@ -3,16 +3,19 @@ package data
 import (
   "encoding/json"
   "regexp"
+  "bytes"
 )
 
 type JsonRegexp regexp.Regexp
 
 func (r *JsonRegexp) UnmarshalJSON(input []byte) error {
-  var str *string
-  err := json.Unmarshal(input, str)
+  decoder := json.NewDecoder(bytes.NewReader(input))
+
+  var str string
+  err := decoder.Decode(&str)
   if err != nil { return err }
 
-  regexp, err := regexp.Compile(*str)
+  regexp, err := regexp.Compile(str)
   if err != nil { return err }
 
   *r = JsonRegexp(*regexp)

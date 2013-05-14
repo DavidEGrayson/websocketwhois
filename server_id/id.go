@@ -151,7 +151,7 @@ func (s *Server) identify() {
     s.Protocol = s.Hint.Protocol
     s.NotExistRegexp = (*regexp.Regexp)(s.Hint.NotExistRegexp)
     s.ExistRegexp = (*regexp.Regexp)(s.Hint.ExistRegexp)
-    s.log.Println("Protocol (from hint) is %s, %s, %s",
+    s.log.Printf("Protocol (from hint) is %s, %s, %s",
       s.Protocol, s.NotExistRegexp, s.ExistRegexp)
     return
   }

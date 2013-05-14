@@ -30,7 +30,7 @@ func loadData() {
   serverHints, err := data.ServerHintsRead()
   if (err != nil) { log.Fatal(err) }
 
-  serverMap := groupByServer(debianSuffixInfos)
+  serverMap = groupByServer(debianSuffixInfos)
 
   removeUnusableServers(serverMap)
 
