@@ -66,8 +66,7 @@ func (r *queryResult) isOneLiner(line string) bool {
 // returns it as a queryResult,  which is really just a slice of strings where each
 // string is a line and the line-ending characters have been removed.
 func (s *serverInfo) query(query string) (queryResult, error) {
-  addr := s.Name + ":43"
-  conn, err := net.DialTimeout("tcp", addr, 40 * time.Second)
+  conn, err := net.DialTimeout("tcp", s.Name + ":43", 40 * time.Second)
   if err != nil {
     s.log.Println("Error dialing", err)
     return nil, err
@@ -80,8 +79,6 @@ func (s *serverInfo) query(query string) (queryResult, error) {
     s.log.Println("Error sending", err)
     return nil, err
   }
-
-  // TODO: fix this to return the remainder even if the server doesn't send a newline
 
   scanner := bufio.NewScanner(conn);
   result := queryResult([]string{})
