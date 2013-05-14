@@ -189,3 +189,5 @@ puntcat:
     Available: line like "% Object "lolz.cat" NOT FOUND."
     Taken: line like "Domain Name: lol.cat"
     
+  Prefix queries:  YES
+    Example: cata%.cat
