@@ -210,9 +210,14 @@ func (s *serverInfo) identifyGenericProtocol() {
   if err != nil { return }
 
   counts := patternsMatchCounts(queryResult, notExistPatterns)
+
+  if (len(counts) == 0) {
+    s.log("non-existence response not recognized:")
+    s.logResult(queryResult)
+  }
+
   s.logf("Number of not-exist patterns matched: %d", len(counts))
 
-  s.log(counts)
 }
 
 func (s *serverInfo) identify() {
