@@ -8,6 +8,12 @@
   ".iq": {
     "ExampleExistingDomain": "cmc.iq"
   },
+  ".co.pl": {
+    "ExampleExistingDomain": "shoes.co.pl"
+  },
+  ".co.ua": {
+    "ExampleExistingDomain": "hair.co.ua"
+  },
   ".nc": {
     "ExampleExistingDomain": "cctld.nc",
     "NameRestrictions": [
