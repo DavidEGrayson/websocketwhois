@@ -5,6 +5,8 @@ import (
   "os"
   "regexp"
   "log"
+  "../errorwrap"
+  "io/ioutil"
 )
 
 type Server struct {
@@ -15,6 +17,18 @@ type Server struct {
 
 type OutputFile struct {
   Servers []*Server
+}
+
+func ServerHintsRead() (map[string]*Server, error) {
+  servers := make(map[string]*Server)
+  
+  hint_bytes, err := ioutil.ReadFile(Directory + "/server-hints.json")
+  if err != nil { return nil, err }
+
+  err = json.Unmarshal(hint_bytes, &servers)
+  if err != nil { return nil, errorwrap.New("Error decoding server-hints.json", err) }
+
+  return servers, nil
 }
 
 func ServersWrite(servers []*Server) {

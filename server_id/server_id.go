@@ -15,7 +15,7 @@ import (
   "flag"
 )
 
-var servers []*Server
+var serverMap map[string]*Server
 
 func loadData() {
   responseAnalysisInit()
@@ -27,11 +27,22 @@ func loadData() {
   debianSuffixInfos, err := data.DebianSuffixInfosRead()
   if (err != nil) { log.Fatal(err) }
 
+  serverHints, err := data.ServerHintsRead()
+  if (err != nil) { log.Fatal(err) }
+
   serverMap := groupByServer(debianSuffixInfos)
 
   removeUnusableServers(serverMap)
 
-  servers = sortServers(serverMap)
+  for name, hint := range serverHints {
+    if server, exists := serverMap[name]; exists {
+      server.Hint = hint
+    } else {
+      log.Fatalf("Hint for server %s does not match any entry from Debian.  " +
+        "Should we create a new Server object for it?", name)
+    }
+  }
+
 }
 
 func main() {
@@ -52,20 +63,17 @@ func main() {
   if *singleServer != "" {
 
     var server *Server
-    for _, s := range servers {
-      if s.Name == *singleServer {
-        server = s
-      }
-    }
-
-    if server == nil {
-      log.Fatalf("Server %s not found." , singleServer)
+    server, exists := serverMap[*singleServer]
+    if !exists {
+      log.Fatalf("Server %s not found.", *singleServer)
     }
 
     log.Printf("Only identifying a single server: %s.", *singleServer);
     server.identify()
 
   } else {
+
+    servers := sortServers(serverMap)
 
     if *parallelMode {
       parallelIdentifyAll(servers)

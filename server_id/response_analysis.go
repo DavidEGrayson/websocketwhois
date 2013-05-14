@@ -17,6 +17,8 @@ func responseAnalysisInit() {
     `(?i)^% object (\S+) not found.$`,
     `(?i)^object does not exist$`,
     `(?i)^no entries found in the \.\S+ database`,
+    `(?i)^sorry, but domain: "(\S+)", not found in database`,
+    `(?i)^domain not found$`,
   })
 
   existPatterns = newPatternSet([]string {

@@ -20,7 +20,7 @@ type Server struct {
   Name string
   Suffixes []string
 
-  Hints data.Server   // Hints from the maintainers of this program.
+  Hint *data.Server   // Hints from the maintainers of this program.
   DebianNote string   // Info from the Debian whois utility.
 
   // The fields we want to compute.
@@ -146,6 +146,16 @@ func (s *Server) identifyGenericProtocol() (err error) {
 }
 
 func (s *Server) identify() {
+
+  if (s.Hint != nil && s.Hint.Protocol != "") {
+    s.Protocol = s.Hint.Protocol
+    s.NotExistRegexp = s.Hint.NotExistRegexp
+    s.ExistRegexp = s.Hint.ExistRegexp
+    s.log.Println("Protocol (from hint) is %s, %s, %s",
+      s.Protocol, s.NotExistRegexp, s.ExistRegexp)
+    return
+  }
+
   // Can we get a help screen?
   questionMarkResult, err := s.query("?")
   if err != nil {
