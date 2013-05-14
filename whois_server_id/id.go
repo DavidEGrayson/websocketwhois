@@ -191,20 +191,36 @@ func patternsMatchCounts(strings []string, patterns []*regexp.Regexp) map[*regex
   return patternMap
 }
 
-func (s *serverInfo) identifyGenericProtocol() {
-  suffix := s.Suffixes[0]
+func (s *serverInfo) identifyGenericNotExistResponse(suffix str) error {
 
   domainNameProbablyNotExist := randomDomain(suffix)
   s.log.Println("Asking about " + domainNameProbablyNotExist)
   queryResult, err := s.query(domainNameProbablyNotExist)
-  if err != nil { return }
+  if err != nil { return err }
 
   counts := patternsMatchCounts(queryResult, notExistPatterns)
 
   if (len(counts) == 0) {
-    s.log.Println("non-existence response not recognized:")
-    s.log.Println(queryResult)
-    //s.logResult(queryResult)
+    return errors.New("non-existence response not recognized: " + string(queryResult))
+  }
+
+  return nil
+}
+
+func (s *serverInfo) identifyGenericProtocol() {
+  
+  suffix := s.Suffixes[0]
+
+  err := s.identifyGenericNotExistResponse(suffix)
+  if err != nil {
+    s.log(err)
+    return
+  }
+
+  err = s.identifyGenericExistResponse(suffix)
+  if err != nil {
+    s.log(err)
+    return
   }
 
   s.log.Printf("Number of not-exist patterns matched: %d\n", len(counts))
