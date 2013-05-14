@@ -12,10 +12,12 @@ func initData() {
   notExistPatterns = newPatternSet([]string {
     "(?i)^no entries found$",
     "(?i)^no matching record$",
+    "(?i)^Domain (.+) not registe?red.$",
   })
 
   existPatterns = newPatternSet([]string {
     "(?i)^domain +name: +(.+)$",
+    "(?i)^ *Complete Domain Name\\.+: *(.+)$",
   })
 }
 
@@ -28,7 +30,7 @@ func analyzeNotExistResponse(r queryResult) (*regexp.Regexp, error) {
     return notExistScore.FirstMatchedPattern, nil
   }
 
-  msg := fmt.Sprintf("Expected response to indicate domain non-existence, but it did not (%d,%d): %s", notExistScore.MatchCount, existScore.MatchCount, r)
+  msg := fmt.Sprintf("Expected response to indicate domain non-existence, but it did not (%d,%d): %s", notExistScore.MatchCount, existScore.MatchCount, r.String())
 
   return nil, errors.New(msg)
 }

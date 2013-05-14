@@ -159,6 +159,8 @@ func (s *serverInfo) identify() {
 
   if (s.Protocol == "") {
     s.log.Println("Failed to identify protocol.")
+  } else {
+    s.log.Println("Protocol is", s.Protocol)
   }
 }
 
