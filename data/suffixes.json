@@ -1,6 +1,10 @@
 {
-  ".biz.ua": { "ExampleExistingDomain": "a.biz.ua" },
-  ".cat": { "ExampleExistingDomain": "lol.cat" }
+  ".biz.ua": {
+    "ExampleExistingDomain": "a.biz.ua"
+  },
+  ".cat": {
+    "ExampleExistingDomain": "lol.cat"
+  }
   ".nc": {
     "ExampleExistingDomain": "cctld.nc"
     "NameRestrictions": [
