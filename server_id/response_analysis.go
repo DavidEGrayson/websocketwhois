@@ -28,6 +28,8 @@ func responseAnalysisInit() {
     `(?i)^(\S+) is free$`,
     `(?i)^% not registered - the domain you have requested (\S+) is not a registered \S+ domain name\.$`,
     `(?i)^key not found$`,
+    `(?i)^no match found for (\S+)$`,
+    `(?i)^the domain has not been registered\.$`,
   })
 
   existPatterns = newPatternSet([]string {

@@ -103,5 +103,17 @@
     "Protocol": "generic",
     "NotExistRegexp": "(?i)^domain:\\s+available$",
     "ExistRegexp": "(?i)^registrant:$"
+  },
+  "whois.gg": {
+    "DoNotUse": true,
+    "_Notes": "Scary legal threats from the server say I cannot use repackage or redistribute the data.",
+    "_Protocol": "generic",
+    "_NotExistRegexp": "(?i)status: not registered$",
+    "_ExistRegexp": "(?i)status: active$"
+  },
+  "whois.gov.za": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)no match found for (\\S+)$",
+    "ExistRegexp": "(?i)hostname\\s*: (\\S+)$"
   }
 }

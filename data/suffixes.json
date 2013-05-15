@@ -51,5 +51,8 @@
   },
   ".co.ua": {
     "ExampleExistingDomain": "hair.co.ua"
+  },
+  ".gov.za": {
+    "ExampleExistingDomain": "www.gov.za"
   }
 }
