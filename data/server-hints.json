@@ -1,10 +1,21 @@
 {
+  "kero.yachay.pe": {
+    "RateLimit": true
+  },
+  "whois.adamsnames.tc": {
+    "RateLimit": true
+  },
+  "whois.aeda.net.ae": {
+    "RateLimit": true
+  },
+  "whois.ausregistry.net.au": {
+    "RateLimit": true
+  },
   "whois.cat": {
     "Notes": [
       "This server supports the wild card character '%', but it may not appear within the first three characters.  Websocket Whois does not take advantage of this; since the TLD is for such a limited use it did not seem worthwhile to write special code just for it." 
     ]
   },
-
   "whois.cira.ca": {
     "Protocol": "generic",
     "NotExistRegexp": "(?i)^domain status:\\s+available$",
@@ -25,5 +36,8 @@
     "Protocol": "generic",
     "NotExistRegexp": "(?i)^domain status: available$",
     "ExistRegexp": "(?i)^domain status: available$"
+  },
+  "whois.pir.org": {
+    "RateLimit": true
   }
 }

@@ -24,7 +24,6 @@ type Server struct {
   DebianNote string   // Info from the Debian whois utility.
 
   // The fields we want to compute.
-  RateLimit bool
   Protocol string
   NotExistRegexp, ExistRegexp *regexp.Regexp
 
@@ -146,18 +145,18 @@ func (s *Server) identifyGenericProtocol() (err error) {
   return nil
 }
 
-func (s *Server) identify() {
+func (s *Server) identify() (success bool) {
 
-  if (s.Hint.RateLimit) {
+  if (s.Hint != nil && s.Hint.RateLimit) {
     s.log.Printf("This server has a rate limit.  Not contacting it.")
-    return
+    return true
   }
 
   if (s.Hint != nil && s.Hint.Protocol != "") {
 
     if s.Hint.Protocol == "generic" && s.Hint.NotExistRegexp == nil || s.Hint.ExistRegexp == nil {
       s.log.Printf("Error: Hint says protocol=generic but did not specify regexps.")
-      return
+      return false
     }
 
     s.Protocol = s.Hint.Protocol
@@ -165,14 +164,14 @@ func (s *Server) identify() {
     s.ExistRegexp = (*regexp.Regexp)(s.Hint.ExistRegexp)    
     s.log.Printf("Protocol (from hint) is %s, %s, %s",
       s.Protocol, s.NotExistRegexp, s.ExistRegexp)
-    return
+    return false
   }
 
   // Can we get a help screen?
   questionMarkResult, err := s.query("?")
   if err != nil {
     s.log.Println("Error with question mark query.")
-    return
+    return false
   }
   //resultJoined := strings.Join(questionMarkResult, " ")
 
@@ -202,9 +201,11 @@ func (s *Server) identify() {
 
   if (s.Protocol == "") {
     s.log.Println("Failed to identify protocol.")
-  } else {
-    s.log.Println("Protocol is", s.Protocol)
+    return false
   }
+
+  s.log.Println("Protocol is", s.Protocol)
+  return true
 }
 
 
@@ -214,14 +215,6 @@ func removeUnusableServers(serverMap map[string] *Server) {
   // TODO: get zone file access for all these weird servers, or at least the important ones.
 
   weirdServers := []string {
-    // These servers have a pretty extreme rate limit so we do not plan on contacting
-    // them in production.  We do not need to identify their protocol.
-    "whois.pir.org",            // .org
-    "kero.yachay.pe",           // .ae
-    "whois.adamsnames.tc",      // .gd .tc, .vg, 
-    "whois.aeda.net.ae",        // .ae
-    "whois.ausregistry.net.au", // .au
-
     // I tried but could not figure out how to get a meaningul response from these:
     "whois.ac.za",              // .ac.za
     // TODO: tell our users that the entire .ac.za list is here: http://protea.tenet.ac.za/cgi/cgi_domainquery.exe?list

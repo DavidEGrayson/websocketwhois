@@ -156,15 +156,20 @@ func (s *Server) extractOutput() *data.Server {
   r.Protocol = s.Protocol
   r.NotExistRegexp = (*data.JsonRegexp)(s.NotExistRegexp)
   r.ExistRegexp = (*data.JsonRegexp)(s.ExistRegexp)
+
+  // These fields we just copy directly from the hint; we didn't do anything to them here.
+  if (s.Hint != nil) {
+    r.RateLimit = s.Hint.RateLimit
+  }
   return &r
 }
 
 func serialIdentifyAll(servers []*Server) {
   for _, server := range servers {
-    server.identify()
+    success := server.identify()
     fmt.Println() // put space between servers in the log
 
-    if server.Protocol == "" {
+    if !success {
       log.Fatal("Aborting after first failure.")
     }
   }
