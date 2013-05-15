@@ -59,7 +59,7 @@
     "RateLimit": true
   },
   "whois.dns.pl": {
-    "DoNotUse": true
+    "DoNotUse": true,
     "_Notes": [ "Sometimes takes 5-10 seconds to respond to queries.  TODO: ignore this server?" ]
   },
   "whois.domain-registry.nl": {
@@ -94,5 +94,9 @@
   "whois.edu.cn": {
     "DoNotUse": true,
     "_Notes": "Server seems to be down or has moved."
+  },
+  "whois.educause.net": {
+    "DoNotUse": true,
+    "_Notes": "For .edu, we will use whois.crsnic.net instead so we can get info about .com, .net, and .edu domains simultaneously."
   }
 }

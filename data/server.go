@@ -6,6 +6,8 @@ import (
   "log"
   "../errorwrap"
   "io/ioutil"
+  "errors"
+  "fmt"
 )
 
 type Server struct {
@@ -25,11 +27,23 @@ type OutputFile struct {
 func ServerHintsRead() (map[string]*Server, error) {
   servers := make(map[string]*Server)
   
-  hint_bytes, err := ioutil.ReadFile(Directory + "/server-hints.json")
+  hintBytes, err := ioutil.ReadFile(Directory + "/server-hints.json")
   if err != nil { return nil, err }
 
-  err = json.Unmarshal(hint_bytes, &servers)
-  if err != nil { return nil, errorwrap.New("Error decoding server-hints.json", err) }
+  err = json.Unmarshal(hintBytes, &servers)
+  if err != nil {
+    if serr, ok := err.(*json.SyntaxError); ok {
+      //contextLength := 10
+      //if int(serr.Offset) + contextLength >= len(hintBytes) {
+      //  contextLength = len(hintBytes) - int(serr.Offset) - 1
+      //}
+      //nearBytes := hintBytes[serr.Offset:contextLength]
+      msg := fmt.Sprintf("Syntax error in server-hints.json at offset %d: %s",
+        serr.Offset, serr.Error())
+      return nil, errors.New(msg)
+    }
+    return nil, errorwrap.New("Error decoding server-hints.json", err)
+  }
 
   return servers, nil
 }
