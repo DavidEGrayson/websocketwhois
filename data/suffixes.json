@@ -37,6 +37,9 @@
       "Url": "http://www.domaine.nc/charte/charte-en-20100603.pdf"
     }
   },
+  ".eu.org": {
+    "ExampleExistingDomain": "france.eu.org"
+  },
   ".pt": {
     "ExampleExistingDomain": "dns.pt"
   },

@@ -98,5 +98,10 @@
   "whois.educause.net": {
     "DoNotUse": true,
     "_Notes": "For .edu, we will use whois.crsnic.net instead so we can get info about .com, .net, and .edu domains simultaneously."
+  },
+  "whois.eu": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^domain:\\s+available$",
+    "ExistRegexp": "(?i)^registrant:$"
   }
 }
