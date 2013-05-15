@@ -21,6 +21,7 @@ func responseAnalysisInit() {
     `(?i)^domain not found$`,
     `(?i)^(.+) is available\.$`,
     `(?i)^no entries found for the selected source\.$`,
+    `(?i)^%error: no entries found$`,
   })
 
   existPatterns = newPatternSet([]string {

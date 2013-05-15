@@ -51,6 +51,7 @@ func main() {
   loadData()
 
   singleServer := flag.String("s", "", "Only identify a single server.")
+  skipToServer := flag.String("t", "", "Skip to a single server and start there (serial mode only).")
   parallelMode := flag.Bool("p", false, "Identify in parallel (much faster)")
   flag.Parse()
 
@@ -78,7 +79,7 @@ func main() {
     if *parallelMode {
       parallelIdentifyAll(servers)
     } else {
-      serialIdentifyAll(servers)
+      serialIdentifyAll(servers, *skipToServer)
     }
 
     output := extractOutput(servers)
@@ -164,8 +165,16 @@ func (s *Server) extractOutput() *data.Server {
   return &r
 }
 
-func serialIdentifyAll(servers []*Server) {
+func serialIdentifyAll(servers []*Server, skipToServer string) {
   for _, server := range servers {
+    if skipToServer != "" {
+      if server.Name != skipToServer {
+        continue
+      }
+
+      skipToServer = ""
+    }
+
     success := server.identify()
     fmt.Println() // put space between servers in the log
 
