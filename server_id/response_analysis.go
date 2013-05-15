@@ -20,6 +20,7 @@ func responseAnalysisInit() {
     `(?i)^sorry, but domain: "(\S+)", not found in database`,
     `(?i)^domain not found$`,
     `(?i)^(.+) is available\.$`,
+    `(?i)^no entries found for the selected source\.$`,
   })
 
   existPatterns = newPatternSet([]string {
