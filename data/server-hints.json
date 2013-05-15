@@ -27,6 +27,7 @@
     "ExistRegexp": "(?i)^domain id:"
   },
   "whois.cnnic.cn": {
+    "RateLimit": true,
     "_Notes": [ "Unreliable.  Sometimes says 'Queried interval is too short'.  Maybe I should space out all queries to this server by one second."]
   },
   "whois.co.pl": {
@@ -45,6 +46,11 @@
     "NotExistRegexp": "(?i)^status: connect$",
     "ExistRegexp": "(?i)^status: free$",
     "_InvalidRegexp": "(?i)^status: invalid$"
+  },
+  "whois.dns.be": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^status: available$",
+    "ExistRegexp": "(?i)^status: not available$"
   },
   "whois.pir.org": {
     "RateLimit": true
