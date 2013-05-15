@@ -37,6 +37,12 @@
     "NotExistRegexp": "(?i)^domain status: available$",
     "ExistRegexp": "(?i)^domain status: available$"
   },
+  "whois.denic.de": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^status: connect$",
+    "ExistRegexp": "(?i)^status: free$",
+    "_InvalidRegexp": "(?i)^statuc: invalid"
+  },
   "whois.pir.org": {
     "RateLimit": true
   }

@@ -123,7 +123,7 @@ func (s *Server) identifyGenericProtocol() (err error) {
   suffix := s.Suffixes[0]
 
   domainNameProbablyNotExist := randomDomain(suffix)
-  s.log.Println("Asking about " + domainNameProbablyNotExist)
+  //s.log.Println("Asking about " + domainNameProbablyNotExist)
   queryResult, err := s.query(domainNameProbablyNotExist)
   if err != nil { return err }
 
@@ -164,7 +164,7 @@ func (s *Server) identify() (success bool) {
     s.ExistRegexp = (*regexp.Regexp)(s.Hint.ExistRegexp)    
     s.log.Printf("Protocol (from hint) is %s, %s, %s",
       s.Protocol, s.NotExistRegexp, s.ExistRegexp)
-    return false
+    return true
   }
 
   // Can we get a help screen?
