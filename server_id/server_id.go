@@ -30,6 +30,14 @@ func loadData() {
   serverHints, err := data.ServerHintsRead()
   if (err != nil) { log.Fatal(err) }
 
+  // Our first little bit of intelligent processing: If the hint says that
+  // the server has a rate limit, that implies we should not use it.
+  for _, server := range serverHints {
+    if server.RateLimit {
+      server.DoNotUse = true
+    }
+  }
+
   serverMap = groupByServer(debianSuffixInfos)
 
   removeUnusableServers(serverMap)
@@ -161,7 +169,9 @@ func (s *Server) extractOutput() *data.Server {
   // These fields we just copy directly from the hint; we didn't do anything to them here.
   if (s.Hint != nil) {
     r.RateLimit = s.Hint.RateLimit
+    r.DoNotUse = s.Hint.DoNotUse
   }
+
   return &r
 }
 

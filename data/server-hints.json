@@ -59,7 +59,8 @@
     "RateLimit": true
   },
   "whois.dns.pl": {
-    "_Notes": [ "Somestimes takes 5-10 seconds to respond to queries." ]
+    "DoNotUse": true
+    "_Notes": [ "Sometimes takes 5-10 seconds to respond to queries.  TODO: ignore this server?" ]
   },
   "whois.domain-registry.nl": {
     "RateLimit": true,
@@ -89,5 +90,9 @@
   },
   "whois.dotmasr.eg": {
     "RateLimit": true
+  },
+  "whois.edu.cn": {
+    "DoNotUse": true,
+    "_Notes": "Server seems to be down or has moved."
   }
 }

@@ -12,6 +12,7 @@ type Server struct {
   Name string
 
   RateLimit bool
+  DoNotUse bool
   Protocol string
   Suffixes []string
   NotExistRegexp, ExistRegexp *JsonRegexp
@@ -55,5 +56,3 @@ func ServersWrite(servers []*Server) {
     log.Fatal("Error writing to output file.", err)
   }
 }
-
-

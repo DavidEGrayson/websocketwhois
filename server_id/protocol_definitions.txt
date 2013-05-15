@@ -42,7 +42,7 @@ ws20:
       "The Registry database contains ONLY .COM, .NET, .EDU domains and"
 
 afilias:
-  Example: whois.aero. whois.afilias.info
+  Example: whois.aero, whois.afilias.info, whois.dotmobiregistry.net
   Question mark query or unknown TLD: "Not a valid domain search pattern" one-liner
 
 	Help query: "help"

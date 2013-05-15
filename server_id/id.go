@@ -59,6 +59,8 @@ func (s *Server) identifyWs20() {
   }
 }
 
+
+
 func (s *Server) detectAfilias() (success bool) {
   result, err := s.query("help")
   if err != nil {
@@ -66,12 +68,15 @@ func (s *Server) detectAfilias() (success bool) {
     return false
   }
 
-  str := strings.Join(result, " ");
-  if !strings.Contains(str, "afilias") {
-    s.log.Println("Looked like an afilias server but did not return 'afilias' anywhere in the help screen.")
-    return false
+  afiliasHelpRegexp := regexp.MustCompile(`'%' or '\.\.\.':\s+Used as a suffix on the input, will produce all records`)
+
+  for _, line := range result {
+    if afiliasHelpRegexp.MatchString(line) {
+      return true
+    }
   }
 
+  s.log.Println("Looked like an afilias server but help screen did not have the expected line.")
   return true
 }
 
@@ -147,8 +152,8 @@ func (s *Server) identifyGenericProtocol() (err error) {
 
 func (s *Server) identify() (success bool) {
 
-  if (s.Hint != nil && s.Hint.RateLimit) {
-    s.log.Printf("This server has a rate limit.  Not contacting it.")
+  if (s.Hint != nil && s.Hint.DoNotUse) {
+    s.log.Printf("Hint says we should not use this server.  Not contacting it.")
     return true
   }
 
