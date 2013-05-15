@@ -1,18 +1,12 @@
 {
-  ".biz.ua": {
-    "ExampleExistingDomain": "a.biz.ua"
-  },
   ".cat": {
     "ExampleExistingDomain": "lol.cat"
-  },
-  ".iq": {
-    "ExampleExistingDomain": "cmc.iq"
   },
   ".co.pl": {
     "ExampleExistingDomain": "shoes.co.pl"
   },
-  ".co.ua": {
-    "ExampleExistingDomain": "hair.co.ua"
+  ".iq": {
+    "ExampleExistingDomain": "cmc.iq"
   },
   ".nc": {
     "ExampleExistingDomain": "cctld.nc",
@@ -31,5 +25,14 @@
       "Title": "Article 15 of the .nc naming charter",
       "Url": "http://www.domaine.nc/charte/charte-en-20100603.pdf"
     }
+  },
+  ".sc": {
+    "ExampleExistingDomain": "nic.sb"
+  },
+  ".biz.ua": {
+    "ExampleExistingDomain": "a.biz.ua"
+  },
+  ".co.ua": {
+    "ExampleExistingDomain": "hair.co.ua"
   }
 }

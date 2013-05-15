@@ -9,7 +9,10 @@ import (
 )
 
 type Server struct {
-  Name, Protocol string
+  Name string
+
+  RateLimit bool
+  Protocol string
   Suffixes []string
   NotExistRegexp, ExistRegexp *JsonRegexp
 }

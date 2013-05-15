@@ -19,5 +19,11 @@
     "Protocol": "generic",
     "NotExistRegexp": "(?i)^status\\.: not found$",
     "ExistRegexp": "(?i)^status\\.: registered$"
+  },
+  "whois.coccaregistry.net": {
+    "RateLimit": true,
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^domain status: available$",
+    "ExistRegexp": "(?i)^domain status: available$"
   }
 }

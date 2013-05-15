@@ -24,6 +24,7 @@ type Server struct {
   DebianNote string   // Info from the Debian whois utility.
 
   // The fields we want to compute.
+  RateLimit bool
   Protocol string
   NotExistRegexp, ExistRegexp *regexp.Regexp
 
@@ -147,6 +148,11 @@ func (s *Server) identifyGenericProtocol() (err error) {
 
 func (s *Server) identify() {
 
+  if (s.Hint.RateLimit) {
+    s.log.Printf("This server has a rate limit.  Not contacting it.")
+    return
+  }
+
   if (s.Hint != nil && s.Hint.Protocol != "") {
 
     if s.Hint.Protocol == "generic" && s.Hint.NotExistRegexp == nil || s.Hint.ExistRegexp == nil {
@@ -219,6 +225,9 @@ func removeUnusableServers(serverMap map[string] *Server) {
     // I tried but could not figure out how to get a meaningul response from these:
     "whois.ac.za",              // .ac.za
     // TODO: tell our users that the entire .ac.za list is here: http://protea.tenet.ac.za/cgi/cgi_domainquery.exe?list
+
+    // These ones had I/O Timeouts:
+    "whois.co.ug",
 
     // These TLDs are not available even though whois might work.
     "whois.alt.za",
