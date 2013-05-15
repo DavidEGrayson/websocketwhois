@@ -5,6 +5,17 @@
   ".co.pl": {
     "ExampleExistingDomain": "shoes.co.pl"
   },
+  ".ie": {
+    "ExampleExistingDomain": "aaa.ie",
+    "_NameRestrictions": [
+      "Must be less than 66 characters in length, including the '.ie' characters",
+      "Must not start with a hyphen '-'",
+      "Must not have a label ending in a hyphen before the '.ie' e.g. 'xyz-.ie'",
+      "Must not start with 'xn--' which is reserved for IDN usage",
+      "Must contain at least 5 characters, including the three for '.ie'",
+      "Must have at least one alphabetic character."
+    ]
+  },
   ".iq": {
     "ExampleExistingDomain": "cmc.iq"
   },
@@ -25,6 +36,9 @@
       "Title": "Article 15 of the .nc naming charter",
       "Url": "http://www.domaine.nc/charte/charte-en-20100603.pdf"
     }
+  },
+  ".pt": {
+    "ExampleExistingDomain": "dns.pt"
   },
   ".sc": {
     "ExampleExistingDomain": "nic.sb"

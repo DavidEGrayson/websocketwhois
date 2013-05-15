@@ -178,6 +178,7 @@ func (s *Server) identify() (success bool) {
   switch {
 
   case len(questionMarkResult) == 0:
+    s.log.Println("Empty response to question mark query.")
 
   case len(questionMarkResult) > 20 && questionMarkResult[1] == "Whois Server Version 2.0":
     s.Protocol = "ws20"

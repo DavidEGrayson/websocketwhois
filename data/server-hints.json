@@ -52,7 +52,42 @@
     "NotExistRegexp": "(?i)^status: available$",
     "ExistRegexp": "(?i)^status: not available$"
   },
+  "whois.dns.hr": {
+    "RateLimit": true
+  },
+  "whois.dns.lu": {
+    "RateLimit": true
+  },
+  "whois.dns.pl": {
+    "_Notes": [ "Somestimes takes 5-10 seconds to respond to queries." ]
+  },
+  "whois.domain-registry.nl": {
+    "RateLimit": true,
+    "_RateLimitNote": "It said: only 1 request per second allowed, try again later"
+  },
+  "whois.domain.kg": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^data not found\\. this domain is available for registration\\.$",
+    "ExistRegexp": "(?i)^record created:"
+  },
   "whois.pir.org": {
+    "RateLimit": true
+  },
+  "whois.domainregistry.my": {
+    "RateLimit": true,
+    "RateLimitNote": "It said: Please note that the query limit is 500 per day from the same IP."
+  },
+  "whois.domreg.lt": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^status:\\s*available$",
+    "ExistRegexp": "(?i)^status:\\s*registered$"
+  },
+  "whois.dot.tk": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^invalid query or domain name not known in dot tk domain registry$",
+    "ExistRegexp": "(?i)\\s*domain registered:"
+  },
+  "whois.dotmasr.eg": {
     "RateLimit": true
   }
 }
