@@ -14,7 +14,7 @@ func responseAnalysisInit() {
     `(?i)^no matching record\.?$`,
     `(?i)^domain (\S+) not registe?red\.$`,
     `(?i)^% no entries found for the selected source\(s\)\.$`,
-    `(?i)^% object (\S+) not found.$`,
+    `(?i)^%? ?object (\S+) not found.$`,
     `(?i)^object does not exist$`,
     `(?i)^no entries found in the \.\S+ database`,
     `(?i)^sorry, but domain: "(\S+)", not found in database`,
@@ -30,14 +30,22 @@ func responseAnalysisInit() {
     `(?i)^key not found$`,
     `(?i)^no match found for (\S+)$`,
     `(?i)^the domain has not been registered\.$`,
+    `(?i)^% This query returned 0 objects\.$`,
+    `(?i)^domain (\S+) is free\.\s*$`,
+    `(?i)^% no entries found for query "(\S+)"\.$`,
+    `(?i)^% no data was found to match the request criteria\.$`,
+    `(?i)^no such domain (\S+)$`,
+    `(?i)^no match!!$`,
+    `(?i)^above domain name is not registered to krnic\.$`,
   })
 
   existPatterns = newPatternSet([]string {
-    `(?i)^domain +name: *(\S+)\s*$`,
+    `(?i)^domain +name\s*:\s*(\S+)\s*$`,
     `(?i)^domain\s*:\s*(\S+)\s*$`,
     `(?i)^ *complete domain name\.+: *(\S+)\s*$`,
     `(?i)^Domain is not available or is reserved by the registry\.$`,
     `(?i)^Nome de dom.nio / Domain Name: (\S+)$`,
+    `(?i)^\[domain name\]\s*(\S+)$`,
   })
 }
 

@@ -115,5 +115,28 @@
     "Protocol": "generic",
     "NotExistRegexp": "(?i)no match found for (\\S+)$",
     "ExistRegexp": "(?i)hostname\\s*: (\\S+)$"
+  },
+  "whois.iam.net.ma": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^%error 230 no objects found\\s*$",
+    "ExistRegexp": "(?i)^domain:domain-name:(\\S+)$"
+  },
+  "whois.iis.se": {
+    "DoNotUse": true,
+    "_Notes": "Scary legal warnings about how the data must be used in its entirety and not used a backend for a search engine."
+  },
+  "whois.ja.net": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^no such domain (\\S+)$",
+    "ExistRegexp": "(?i)^domain:$"
+  },
+  "whois.je": {
+    "DoNotUse": true,
+    "_Notes": "Scary legal threats."
+  },
+  "whois.kenic.or.ke": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^status: not registered$",
+    "ExistRegexp": "(?i)^created:"
   }
 }

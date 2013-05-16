@@ -16,8 +16,17 @@
       "Must have at least one alphabetic character."
     ]
   },
+  ".il": {
+    "ExampleExistingDomain": "isoc.org.il"
+  },
+  ".int": {
+    "ExampleExistingDomain": "pops.int"
+  },
   ".iq": {
     "ExampleExistingDomain": "cmc.iq"
+  },
+  ".ma": {
+    "ExampleExistingDomain": "iam.net.ma"
   },
   ".nc": {
     "ExampleExistingDomain": "cctld.nc",
@@ -43,6 +52,9 @@
   ".pt": {
     "ExampleExistingDomain": "dns.pt"
   },
+  ".edu.ru": {
+    "ExampleExistingDomain": "www.edu.ru"
+  },
   ".sc": {
     "ExampleExistingDomain": "nic.sb"
   },
@@ -52,7 +64,22 @@
   ".co.ua": {
     "ExampleExistingDomain": "hair.co.ua"
   },
+  ".ac.uk": {
+    "ExampleExistingDomain": "jobs.ac.uk"
+  },
   ".gov.za": {
     "ExampleExistingDomain": "www.gov.za"
+  },
+  ".jp": {
+    "ExampleExistingDomain": "jprs.jp"
+  },
+  ".ke": {
+    "ExampleExistingDomain": "shoes.co.ke"
+  },
+  ".kr": {
+    "ExampleExistingDomain": "aaa.kr"
+  },
+  ".museum": {
+    "ExampleExistingDomain": "icom.museum"
   }
 }
