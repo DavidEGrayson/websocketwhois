@@ -138,5 +138,20 @@
     "Protocol": "generic",
     "NotExistRegexp": "(?i)^status: not registered$",
     "ExistRegexp": "(?i)^created:"
+  },
+  "whois.museum": {
+    "RateLimit": true
+  },
+  "whois.na-nic.com.na": {
+    "DoNotUse": true,
+    "_Notes": "Repackaging of the data is expressly prohibited."
+  },
+  "whois.net.za": {
+    "DoNotUse": true,
+    "_Notes": "Could not figure out how to use this server; could not find an example existing .net.za domain."
+  },
+  "whois.netcom.cm": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout."
   }
 }
