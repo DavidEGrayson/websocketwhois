@@ -20,11 +20,12 @@ func responseAnalysisInit() {
     `(?i)^% no entries found for the selected source\(s\)\.$`,
     `(?i)^%? ?object (\S+) not found.$`,
     `(?i)^object does not exist$`,
-    `(?i)^no entries found in the \.\S+ database`,
+    `(?i)^%?%? ?no entries found in the \S+ database`,
     `(?i)^sorry, but domain: "(\S+)", not found in database`,
     `(?i)^domain not found$`,
     `(?i)^(\S+) is available\.$`,
     `(?i)^no entries found for the selected source\.$`,
+    `(?i)^% no entries found in the selected source\(s\)\.$`,
     `(?i)^%error: no entries found$`,
     `(?i)^% no such domain$`,
     `(?i)^No information available about domain name (\S+) in the registry nask database.$`,
@@ -33,6 +34,7 @@ func responseAnalysisInit() {
     `(?i)^% not registered - the domain you have requested (\S+) is not a registered \S+ domain name\.$`,
     `(?i)^key not found$`,
     `(?i)^no match found for (\S+)$`,
+    `(?i)^no match for "(\S+)"\.$`,
     `(?i)^the domain has not been registered\.$`,
     `(?i)^% This query returned 0 objects\.$`,
     `(?i)^domain (\S+) is free\.\s*$`,
@@ -50,6 +52,9 @@ func responseAnalysisInit() {
     `(?i)^we do not have an entry in our database matching your query\.$`,
     `(?i)^(\S+): no existe$`,
     `(?i)^no domain records were found to match`,
+    `(?i)^no object found!$`,
+    `(?i)^nincs tal.lat\s*/\s*no match$`,
+    `(?i)^\*\*\* nothing found for this query\.$`,
   })
 
   scheme1.existPatterns = newPatternSet([]string {
@@ -60,6 +65,7 @@ func responseAnalysisInit() {
     `(?i)^nome de dom.nio / domain name: (\S+)$`,
     `(?i)^\[domain name\]\s*(\S+)$`,
     `(?i)^domain "(\S+)" - not available$`,
+    `(?i)^nom de domaine#[\. ]*(\S+)`,
   })
 
   scheme2.notExistPatterns = newPatternSet([]string {
@@ -68,15 +74,18 @@ func responseAnalysisInit() {
     `(?i)^status\.?:\s*not found$`,
     `(?i)^status:\s*not registered$`,
     `(?i)^status: free$`,
+    `(?i)^the domain (\S+) was not found\.$`,
   })
 
   scheme2.existPatterns = newPatternSet([]string {
     `(?i)^domain status:\s*registered$`,
     `(?i)^domain status:\s*ok$`,
+    `(?i)^status:\s*ok$`,
     `(?i)^status\.?:\s*registered$`,
     `(?i)^status:\s*not available$`,
     `(?i)^status:\s*connect$`,
     `(?i)^status:\s*active$`,
+    `(?i)^status:\s*delegated$`,
   })
 }
 

@@ -150,5 +150,26 @@
   "whois.nic.cz": {
     "DoNotUse": true,
     "_Notes": "I/O timeout."
+  },
+  "whois.nic.ec": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^status: not registered$",
+    "ExistRegexp": "(?i)^created:"
+  },
+  "whois.nic.fo": {
+    "DoNotUse": true,
+    "_Notes": "reports an internal server error"
+  },
+  "whois.nic.fr": {
+    "RateLimit": true
+  },
+  "whois.nic.im": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^the domain (\\S+) was not found\\.$",
+    "ExistRegexp": "(?i)^expiry date$"
+  },
+  "whois.nic.io": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout.  Maybe use http://nic.io/cgi-bin/whois?query=rvm.io on the backend."
   }
 }

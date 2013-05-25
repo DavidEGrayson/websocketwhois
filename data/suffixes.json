@@ -26,6 +26,21 @@
   ".coop": {
     "ExampleExistingDomain": "directory.coop"
   },
+  ".dz": {
+    "ExampleExistingDomain": "nic.dz"
+  },
+  ".ec": {
+    "ExampleExistingDomain": "amazon.com.ec"
+  },
+  ".fr": {
+    "ExampleExistingDomain": "abc.fr"
+  },  
+  ".gov": {
+    "ExampleExistingDomain": "usa.gov"
+  },
+  ".ht": {
+    "ExampleExistingDomain": "nic.ht"
+  },
   ".ie": {
     "ExampleExistingDomain": "aaa.ie",
     "_NameRestrictions": [
@@ -40,11 +55,20 @@
   ".il": {
     "ExampleExistingDomain": "isoc.org.il"
   },
+  ".im": {
+    "ExampleExistingDomain": "pidgin.im"
+  },
   ".int": {
     "ExampleExistingDomain": "pops.int"
   },
   ".iq": {
     "ExampleExistingDomain": "cmc.iq"
+  },
+  ".ir": {
+    "ExampleExistingDomain": "infrared.ir"
+  },
+  ".it": {
+    "ExampleExistingDomain": "aaa.it"
   },
   ".ma": {
     "ExampleExistingDomain": "iam.net.ma"

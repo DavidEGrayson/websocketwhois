@@ -174,7 +174,7 @@ func (s *Server) extractOutput() *data.Server {
 }
 
 func serialIdentifyAll(servers []*Server, skipToServer string) {
-  for _, server := range servers {
+  for i, server := range servers {
     if skipToServer != "" {
       if server.Name != skipToServer {
         continue
@@ -187,7 +187,8 @@ func serialIdentifyAll(servers []*Server, skipToServer string) {
     fmt.Println() // put space between servers in the log
 
     if !success {
-      log.Fatal("Aborting after first failure.")
+      log.Fatalf("Aborting after first failure.  Server %d out of %d.",
+        i+1, len(servers))
     }
   }
 }
