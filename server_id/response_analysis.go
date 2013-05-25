@@ -37,15 +37,17 @@ func responseAnalysisInit() {
     `(?i)^no such domain (\S+)$`,
     `(?i)^no match!!$`,
     `(?i)^above domain name is not registered to krnic\.$`,
+    `(?i)^domain "(\S+)" - available$`,
   })
 
   existPatterns = newPatternSet([]string {
     `(?i)^domain +name\s*:\s*(\S+)\s*$`,
     `(?i)^domain\s*:\s*(\S+)\s*$`,
     `(?i)^ *complete domain name\.+: *(\S+)\s*$`,
-    `(?i)^Domain is not available or is reserved by the registry\.$`,
-    `(?i)^Nome de dom.nio / Domain Name: (\S+)$`,
+    `(?i)^domain is not available or is reserved by the registry\.$`,
+    `(?i)^nome de dom.nio / domain name: (\S+)$`,
     `(?i)^\[domain name\]\s*(\S+)$`,
+    `(?i)^domain "(\S+)" - not available$`,
   })
 }
 

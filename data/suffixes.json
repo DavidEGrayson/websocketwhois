@@ -1,4 +1,7 @@
 {
+  ".ac": {
+    "ExampleExistingDomain": "aaa.ac"
+  },
   ".cat": {
     "ExampleExistingDomain": "lol.cat"
   },
