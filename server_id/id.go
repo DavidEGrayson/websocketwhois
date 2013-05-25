@@ -215,28 +215,4 @@ func (s *Server) identify() (success bool) {
 }
 
 
-// TODO: store this info as a JSON file instead, like the
-//   "human input" JSON file.
-func removeUnusableServers(serverMap map[string] *Server) {
-  // TODO: get zone file access for all these weird servers, or at least the important ones.
-
-  weirdServers := []string {
-    // I tried but could not figure out how to get a meaningul response from these:
-    "whois.ac.za",              // .ac.za
-    // TODO: tell our users that the entire .ac.za list is here: http://protea.tenet.ac.za/cgi/cgi_domainquery.exe?list
-
-    // These ones had I/O Timeouts:
-    "whois.co.ug",
-
-    // These TLDs are not available even though whois might work.
-    "whois.alt.za",
-    // TODO: tell people that .alt.za allows no new registrations according to http://www.internet.org.za/slds.html
-  }
-
-  for _, serverName := range weirdServers {
-    delete(serverMap, serverName)
-  }
-}
-
-
 

@@ -40,8 +40,6 @@ func loadData() {
 
   serverMap = groupByServer(debianSuffixInfos)
 
-  removeUnusableServers(serverMap)
-
   for name, hint := range serverHints {
     if server, exists := serverMap[name]; exists {
       server.Hint = hint
