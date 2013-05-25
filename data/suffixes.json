@@ -2,6 +2,12 @@
   ".ac": {
     "ExampleExistingDomain": "aaa.ac"
   },
+  ".as": {
+    "ExampleExistingDomain": "abc.as"
+  },
+  ".at": {
+    "ExampleExistingDomain": "abc.at"
+  },
   ".cat": {
     "ExampleExistingDomain": "lol.cat"
   },

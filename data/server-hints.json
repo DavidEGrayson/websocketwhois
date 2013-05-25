@@ -121,5 +121,12 @@
   "whois.netcom.cm": {
     "DoNotUse": true,
     "_Notes": "I/O timeout."
+  },
+  "whois.nic.bj": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout."
+  },
+  "whois.nic.bo": {
+    "Protocol": "bolivia"
   }
 }

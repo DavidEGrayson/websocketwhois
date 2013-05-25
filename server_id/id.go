@@ -155,7 +155,7 @@ func (s *Server) identify() (success bool) {
 
   if (s.Hint != nil && s.Hint.Protocol != "") {
 
-    if s.Hint.Protocol == "generic" && s.Hint.NotExistRegexp == nil || s.Hint.ExistRegexp == nil {
+    if s.Hint.Protocol == "generic" && (s.Hint.NotExistRegexp == nil || s.Hint.ExistRegexp == nil) {
       s.log.Printf("Error: Hint says protocol=generic but did not specify regexps.")
       return false
     }
