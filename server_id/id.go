@@ -129,23 +129,19 @@ func (s *Server) identifyGenericProtocol() (err error) {
 
   domainNameProbablyNotExist := randomDomain(suffix)
   //s.log.Println("Asking about " + domainNameProbablyNotExist)
-  queryResult, err := s.query(domainNameProbablyNotExist)
+  notExistResponse, err := s.query(domainNameProbablyNotExist)
   if err != nil { return err }
-
-  s.NotExistRegexp, err = analyzeNotExistResponse(queryResult)
-  if (err != nil) { return err }
-  s.log.Println("Not-exist response matches ", s.NotExistRegexp)
 
   domainNameProbablyExist := likelyDomain(suffix)
-  queryResult, err = s.query(domainNameProbablyExist)
+  existResponse, err := s.query(domainNameProbablyExist)
   if err != nil { return err }
 
-  s.ExistRegexp, err = analyzeExistResponse(queryResult, domainNameProbablyExist)
+  s.NotExistRegexp, s.ExistRegexp, err = analyzeResponsePair(notExistResponse, existResponse)
   if (err != nil) { return err }
+  s.log.Println("Not-exist response matches ", s.NotExistRegexp)
   s.log.Println("Exist response matches ", s.ExistRegexp)
   
   s.Protocol = "generic"
-
 
   return nil
 }

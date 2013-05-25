@@ -6,10 +6,14 @@ import (
   "fmt"
 )
 
-var notExistPatterns, existPatterns patternSet
+type patternScheme struct {
+  notExistPatterns, existPatterns patternSet
+}
+
+var scheme1, scheme2 patternScheme
 
 func responseAnalysisInit() {
-  notExistPatterns = newPatternSet([]string {
+  scheme1.notExistPatterns = newPatternSet([]string {
     `(?i)^no entries found\.?$`,
     `(?i)^no matching record\.?$`,
     `(?i)^domain (\S+) not registe?red\.$`,
@@ -38,9 +42,10 @@ func responseAnalysisInit() {
     `(?i)^no match!!$`,
     `(?i)^above domain name is not registered to krnic\.$`,
     `(?i)^domain "(\S+)" - available$`,
+    `(?i)^"(\S+)" not found\.$`,
   })
 
-  existPatterns = newPatternSet([]string {
+  scheme1.existPatterns = newPatternSet([]string {
     `(?i)^domain +name\s*:\s*(\S+)\s*$`,
     `(?i)^domain\s*:\s*(\S+)\s*$`,
     `(?i)^ *complete domain name\.+: *(\S+)\s*$`,
@@ -49,35 +54,55 @@ func responseAnalysisInit() {
     `(?i)^\[domain name\]\s*(\S+)$`,
     `(?i)^domain "(\S+)" - not available$`,
   })
+
+  scheme2.notExistPatterns = newPatternSet([]string {
+    `(?i)^domain status:\s*available$`,
+    `(?i)^status:\s*available$`,
+    `(?i)^status\.?:\s*not found$`,
+    `(?i)^status:\s*not registered$`,
+    `(?i)^status: free$`,
+  })
+
+  scheme2.existPatterns = newPatternSet([]string {
+    `(?i)^domain status:\s*registered$`,
+    `(?i)^domain status:\s*ok$`,
+    `(?i)^status\.?:\s*registered$`,
+    `(?i)^status:\s*not available$`,
+    `(?i)^status:\s*connect$`,
+    `(?i)^status:\s*active$`,
+  })
 }
 
-func analyzeNotExistResponse(r queryResult) (*regexp.Regexp, error) {
-  notExistScore := notExistPatterns.score(r)
-  existScore := existPatterns.score(r)
+func analyzeResponsePair(notExistResponse, existResponse queryResult) (notExistRegexp *regexp.Regexp, existRegexp *regexp.Regexp, err error) {
 
-  if (notExistScore.MatchCount == 1 && existScore.MatchCount == 0) {
-    // Totally unambiguous success.  This is a not-exist reponse.
-    return notExistScore.FirstMatchedPattern, nil
-  }
+  notExistRegexp, existRegexp, err1 := responsePairMatchesScheme(scheme1, notExistResponse, existResponse) 
+  if err1 == nil { return }
 
-  msg := fmt.Sprintf("Expected response to indicate domain non-existence, but it did not (%d,%d): %s", notExistScore.MatchCount, existScore.MatchCount, r.String())
+  notExistRegexp, existRegexp, err2 := responsePairMatchesScheme(scheme2, notExistResponse, existResponse) 
+  if err2 == nil { return }
 
-  return nil, errors.New(msg)
+  return nil, nil, errors.New(
+    "Responses did not fit scheme 1: " + err1.Error() + "\n" +
+    "Responses did not fit scheme 2: " + err2.Error() + "\n")
 }
 
-func analyzeExistResponse(r queryResult, domain string) (*regexp.Regexp, error) {
-  notExistScore := notExistPatterns.score(r)
-  existScore := existPatterns.score(r)
+func responsePairMatchesScheme(scheme patternScheme, notExistResponse queryResult, existResponse queryResult) (notExistRegexp *regexp.Regexp, existRegexp *regexp.Regexp, err error) {
 
-  if (notExistScore.MatchCount == 0 && existScore.MatchCount == 1) {
-    // Totally unambiguous success.  This is a not-exist reponse.
-    return existScore.FirstMatchedPattern, nil
+  nnScore := scheme.notExistPatterns.score(notExistResponse)
+  neScore := scheme.existPatterns.score(notExistResponse)
+
+  if !(nnScore.MatchCount == 1 && neScore.MatchCount == 0) {
+    msg := fmt.Sprintf("Expected response to indicate domain non-existence, but it did not (%d,%d): %s", nnScore.MatchCount, neScore.MatchCount, notExistResponse.String())
+    return nil, nil, errors.New(msg)
   }
 
-  // TODO: make sure that the domain actually appears on the matching
-  // line of the response!  Need some more functionality in patternSet
+  enScore := scheme.notExistPatterns.score(existResponse)
+  eeScore := scheme.existPatterns.score(existResponse)
 
-  msg := fmt.Sprintf("Expected response to indicate domain existence, but it did not (%d,%d): %s", notExistScore.MatchCount, existScore.MatchCount, r.String())
+  if !(enScore.MatchCount == 0 && eeScore.MatchCount == 1) {
+    msg := fmt.Sprintf("Expected response to indicate domain existence, but it did not (%d,%d): %s", enScore.MatchCount, eeScore.MatchCount, existResponse.String())
+    return nil, nil, errors.New(msg)
+  }
 
-  return nil, errors.New(msg)
+  return nnScore.FirstMatchedPattern, eeScore.FirstMatchedPattern, nil
 }

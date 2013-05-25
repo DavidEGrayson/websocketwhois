@@ -31,6 +31,9 @@
   ".ma": {
     "ExampleExistingDomain": "iam.net.ma"
   },
+  ".na": {
+    "ExampleExistingDomain": "aa.com.na"
+  },
   ".nc": {
     "ExampleExistingDomain": "cctld.nc",
     "NameRestrictions": [
