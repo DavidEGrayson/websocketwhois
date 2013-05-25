@@ -8,11 +8,23 @@
   ".at": {
     "ExampleExistingDomain": "abc.at"
   },
+  ".br": {
+    "ExampleExistingDomain": "aa.com.br"
+  },
   ".cat": {
     "ExampleExistingDomain": "lol.cat"
   },
+  ".cd": {
+    "ExampleExistingDomain": "ab.cd"
+  },
   ".co.pl": {
     "ExampleExistingDomain": "shoes.co.pl"
+  },
+  ".ck": {
+    "ExampleExistingDomain": "oyster.net.ck"
+  },
+  ".coop": {
+    "ExampleExistingDomain": "directory.coop"
   },
   ".ie": {
     "ExampleExistingDomain": "aaa.ie",

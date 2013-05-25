@@ -180,6 +180,9 @@ func (s *Server) identify() (success bool) {
 
   case len(questionMarkResult) == 0:
     s.log.Println("Empty response to question mark query.")
+    fallthrough
+  default:
+    err = s.identifyGenericProtocol()
 
   case len(questionMarkResult) > 20 && questionMarkResult[1] == "Whois Server Version 2.0":
     s.Protocol = "ws20"
@@ -193,8 +196,6 @@ func (s *Server) identify() (success bool) {
   case strings.HasPrefix(questionMarkResult[0], "swhoisd"):
     s.Protocol = "swhoisd"
 
-  default:
-    err = s.identifyGenericProtocol()
   }
 
   if (err != nil) {

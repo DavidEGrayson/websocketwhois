@@ -128,5 +128,27 @@
   },
   "whois.nic.bo": {
     "Protocol": "bolivia"
+  },
+  "whois.nic.br": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^% (invalid syntax|invalid domain size|No match for domain \"\\S+\")$",
+    "ExistRegexp": "(?i)^domain:\\s+(\\S+)$"
+  },
+  "whois.nic.cd": {
+    "RateLimit": true
+  },
+  "whois.nic.ch": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^we do not have an entry in our database matching your query\\.$",
+    "ExistRegexp": "(?i)^domain name:$"
+  },
+  "whois.nic.cl": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^(\\S+): no existe$",
+    "ExistRegexp": "(?i)^ACE:"
+  },
+  "whois.nic.cz": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout."
   }
 }

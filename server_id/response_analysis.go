@@ -45,7 +45,11 @@ func responseAnalysisInit() {
     `(?i)^domain "(\S+)" - available$`,
     `(?i)^"(\S+)" not found\.$`,
     `(?i)^not found: (\S+)$`,
+    `(?i)^not found\.\.\.$`,
     `(?i)^% nothing found$`,
+    `(?i)^we do not have an entry in our database matching your query\.$`,
+    `(?i)^(\S+): no existe$`,
+    `(?i)^no domain records were found to match`,
   })
 
   scheme1.existPatterns = newPatternSet([]string {
