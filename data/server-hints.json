@@ -156,6 +156,10 @@
     "DoNotUse": true,
     "_Notes": "I/O timeout."
   },
+  "whois.nic.ac": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout."
+  },
   "whois.nic.ec": {
     "Protocol": "generic",
     "NotExistRegexp": "(?i)^status: not registered$",
@@ -176,5 +180,19 @@
   "whois.nic.io": {
     "DoNotUse": true,
     "_Notes": "I/O timeout.  Maybe use http://nic.io/cgi-bin/whois?query=rvm.io on the backend."
+  },
+  "whois.nic.lk": {
+    "Protocol": "generic",
+    "ExistRegexp": "(?i)^domain name:$",
+    "NotExistRegexp": "(?i)^this domain is not available in our whois database$"
+  },
+  "whois.nic.mg": {
+    "RateLimit": true
+  },
+  "whois.nic.mu": {
+    "RateLimit": true
+  },
+  "whois.nic.name": {
+    "_TODO:": "Pass those messages about 'Not available for second level registration.  Third level registrations may be available on this shared name.' back to the user.  Perhaps add a regexp for 'interesting messages to give to user'."
   }
 }

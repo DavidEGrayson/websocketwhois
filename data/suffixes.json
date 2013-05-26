@@ -70,8 +70,26 @@
   ".it": {
     "ExampleExistingDomain": "aaa.it"
   },
+  ".jp": {
+    "ExampleExistingDomain": "jprs.jp"
+  },
+  ".ke": {
+    "ExampleExistingDomain": "shoes.co.ke"
+  },
+  ".kr": {
+    "ExampleExistingDomain": "aaa.kr"
+  },
   ".ma": {
     "ExampleExistingDomain": "iam.net.ma"
+  },
+  ".mg": {
+    "ExampleExistingDomain": "nic.mg"
+  },
+  ".museum": {
+    "ExampleExistingDomain": "icom.museum"
+  },
+  ".mx": {
+    "ExampleExistingDomain": "taco.mx"
   },
   ".na": {
     "ExampleExistingDomain": "aa.com.na"
@@ -93,6 +111,12 @@
       "Title": "Article 15 of the .nc naming charter",
       "Url": "http://www.domaine.nc/charte/charte-en-20100603.pdf"
     }
+  },
+  ".name": {
+    "ExampleExistingDomain": "nic.name"
+  },
+  ".ng": {
+    "ExampleExistingDomain": "nic.net.ng"
   },
   ".eu.org": {
     "ExampleExistingDomain": "france.eu.org"
@@ -117,17 +141,5 @@
   },
   ".gov.za": {
     "ExampleExistingDomain": "www.gov.za"
-  },
-  ".jp": {
-    "ExampleExistingDomain": "jprs.jp"
-  },
-  ".ke": {
-    "ExampleExistingDomain": "shoes.co.ke"
-  },
-  ".kr": {
-    "ExampleExistingDomain": "aaa.kr"
-  },
-  ".museum": {
-    "ExampleExistingDomain": "icom.museum"
   }
 }

@@ -35,19 +35,22 @@ func responseAnalysisInit() {
     `(?i)^key not found$`,
     `(?i)^no match found for (\S+)$`,
     `(?i)^no match for "(\S+)"\.$`,
+    `(?i)^no match for (\S+)$`,
+    `(?i)^no match for domain "(\S+)" \(ascii\):\s*$`,
     `(?i)^the domain has not been registered\.$`,
     `(?i)^% This query returned 0 objects\.$`,
     `(?i)^domain (\S+) is free\.\s*$`,
     `(?i)^% no entries found for query "(\S+)"\.$`,
     `(?i)^% no data was found to match the request criteria\.$`,
     `(?i)^no such domain (\S+)$`,
-    `(?i)^no match!!$`,
-    `(?i)^no match$`,
+    `(?i)^no match!$`,
+    `(?i)^no match.?$`,
     `(?i)^above domain name is not registered to krnic\.$`,
     `(?i)^domain "(\S+)" - available$`,
     `(?i)^"(\S+)" not found\.$`,
     `(?i)^not found: (\S+)$`,
     `(?i)^not found\.\.\.$`,
+    `(?i)^not found$`,
     `(?i)^% nothing found$`,
     `(?i)^we do not have an entry in our database matching your query\.$`,
     `(?i)^(\S+): no existe$`,
@@ -55,6 +58,8 @@ func responseAnalysisInit() {
     `(?i)^no object found!$`,
     `(?i)^nincs tal.lat\s*/\s*no match$`,
     `(?i)^\*\*\* nothing found for this query\.$`,
+    `(?i)^this domain is not available in our whois database$`,
+    `(?i)^no_se_encontro_el_objeto/object_not_found$`,
   })
 
   scheme1.existPatterns = newPatternSet([]string {
@@ -65,7 +70,9 @@ func responseAnalysisInit() {
     `(?i)^nome de dom.nio / domain name: (\S+)$`,
     `(?i)^\[domain name\]\s*(\S+)$`,
     `(?i)^domain "(\S+)" - not available$`,
-    `(?i)^nom de domaine#[\. ]*(\S+)`,
+    `(?i)^nom de domaine#[\. ]*(\S+)$`,
+    `(?i)^domain name\.+:\s*(\S+)$`,
+    `(?i)^domain name \(ascii\): (\S+)$`,
   })
 
   scheme2.notExistPatterns = newPatternSet([]string {
