@@ -194,5 +194,38 @@
   },
   "whois.nic.name": {
     "_TODO:": "Pass those messages about 'Not available for second level registration.  Third level registrations may be available on this shared name.' back to the user.  Perhaps add a regexp for 'interesting messages to give to user'."
+  },
+  "whois.nic.pr": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^connection attempt failed.*$",
+    "ExistRegexp": "(?i)^\\s*domain\\s*:\\s*(\\S+)\\s*$"
+  },
+  "whois.nic.sh": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout."
+  },
+  "whois.nic.sl": {
+    "RateLimit": true,
+    "_Notes": "Says Queries left: followed by a number.  30 queries per day."
+  },
+  "whois.nic.sm": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout."
+  },
+  "whois.nic.sn": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout."
+  },
+  "whois.nic.st": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^no entries found for domain (\\S+)$",
+    "ExistRegexp": "(?i)^\\s*domain +name\\s*:\\s*(\\S+)\\s*$"
+  },
+  "whois.nic.tf": {
+    "RateLimit": true
+  },
+  "whois.nic.tm": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout."
   }
 }

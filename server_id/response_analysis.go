@@ -34,13 +34,13 @@ func responseAnalysisInit() {
     `(?i)^% not registered - the domain you have requested (\S+) is not a registered \S+ domain name\.$`,
     `(?i)^key not found$`,
     `(?i)^no match found for (\S+)$`,
-    `(?i)^no match for "(\S+)"\.$`,
-    `(?i)^no match for (\S+)$`,
+    `(?i)^no match for "?([^"]+)"?\.?$`,
     `(?i)^no match for domain "(\S+)" \(ascii\):\s*$`,
     `(?i)^the domain has not been registered\.$`,
     `(?i)^% This query returned 0 objects\.$`,
     `(?i)^domain (\S+) is free\.\s*$`,
     `(?i)^% no entries found for query "(\S+)"\.$`,
+    `(?i)^no entries found for domain (\S+)$`,
     `(?i)^% no data was found to match the request criteria\.$`,
     `(?i)^no such domain (\S+)$`,
     `(?i)^no match!$`,
@@ -72,7 +72,8 @@ func responseAnalysisInit() {
     `(?i)^domain "(\S+)" - not available$`,
     `(?i)^nom de domaine#[\. ]*(\S+)$`,
     `(?i)^domain name\.+:\s*(\S+)$`,
-    `(?i)^domain name \(ascii\): (\S+)$`,
+    `(?i)^domain name \(ascii\):\s*(\S+)$`,
+    `(?i)^\s*nombre de dominio:\s*(\S+)$`,
   })
 
   scheme2.notExistPatterns = newPatternSet([]string {

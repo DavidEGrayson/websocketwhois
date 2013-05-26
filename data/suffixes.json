@@ -8,6 +8,9 @@
   ".at": {
     "ExampleExistingDomain": "abc.at"
   },
+  ".priv.at": {
+    "ExampleExistingDomain": "nic.priv.at"
+  },
   ".br": {
     "ExampleExistingDomain": "aa.com.br"
   },
@@ -130,6 +133,15 @@
   ".sc": {
     "ExampleExistingDomain": "nic.sb"
   },
+  ".so": {
+    "ExampleExistingDomain": "how.so"
+  },
+  ".st": {
+    "ExampleExistingDomain": "abc.st"
+  },
+  ".tf": {
+    "ExampleExistingDomain": "abc.tf"
+  },  
   ".biz.ua": {
     "ExampleExistingDomain": "a.biz.ua"
   },
