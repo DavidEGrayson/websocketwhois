@@ -7,7 +7,7 @@
   },
   "whois.ac.za": {
     "DoNotUse": true,
-    "_Notes": "I could not figure out how to get a meaninful response from whois.ac.za:43."
+    "_Notes": "I could not figure out how to get a meaningful response from whois.ac.za:43."
   },
   "whois.aeda.net.ae": {
     "RateLimit": true
@@ -160,6 +160,10 @@
     "DoNotUse": true,
     "_Notes": "I/O timeout."
   },
+  "whois.nic.af": {
+    "DoNotUse": true,
+    "_Notes": "Couldn't resolve hose whois.nic.af."
+  },
   "whois.nic.ec": {
     "Protocol": "generic",
     "NotExistRegexp": "(?i)^status: not registered$",
@@ -180,6 +184,11 @@
   "whois.nic.io": {
     "DoNotUse": true,
     "_Notes": "I/O timeout.  Maybe use http://nic.io/cgi-bin/whois?query=rvm.io on the backend."
+  },
+  "whois.nic.ir": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^% No entries found in the selected source\\(s\\)\\.$",
+    "ExistRegexp": "(?i)^domain:\\s*(\\S+)$"
   },
   "whois.nic.lk": {
     "Protocol": "generic",
@@ -275,6 +284,10 @@
   "whois.tonic.to": {
     "RateLimit": true
   },
+  "whois.tn": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout"    
+  },
   "whois.uk.co": {
     "DoNotUse": true,
     "_Notes": "I/O timeout"
@@ -286,6 +299,14 @@
   },
   "whois.za.net": {
     "DoNotUse": true,
-    "_Notes": "Server is too slow to respond."
+    "_Notes": "Server is too slow responding."
+  },
+  "whois.za.org": {
+    "DoNotUse": true,
+    "_Notes": "Server is too slow responding."
+  },
+  "www.nic.ci": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout"
   }
 }
