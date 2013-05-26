@@ -141,7 +141,10 @@
   },
   ".tf": {
     "ExampleExistingDomain": "abc.tf"
-  },  
+  },
+  ".tr": {
+    "ExampleExistingDomain": "aa.com.tr"
+  },
   ".biz.ua": {
     "ExampleExistingDomain": "a.biz.ua"
   },

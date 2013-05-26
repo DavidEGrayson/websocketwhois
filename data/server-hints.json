@@ -227,5 +227,10 @@
   "whois.nic.tm": {
     "DoNotUse": true,
     "_Notes": "I/O timeout."
-  }
+  },
+  "whois.nic.tr": {
+    "ExistRegexp": "(?i)(invalid input|created on.*)$",
+    "NotExistRegexp": "(?i)^no match found for \S+$",
+    "_Notes": "express the invalid domain response better"
+  },
 }
