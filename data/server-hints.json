@@ -271,5 +271,21 @@
     "Protocol": "genric",
     "NotExistRegexp": "(?i)^query_status: 500 Invalid characters in query string$",
     "ExistRegexp": ""
+  },
+  "whois.tonic.to": {
+    "RateLimit": true
+  },
+  "whois.uk.co": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout"
+  },
+  "whois.web.za": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^server error\\!$",
+    "ExistRegexp": "(?i)\\s*domain name:\\s*$"
+  },
+  "whois.za.net": {
+    "DoNotUse": true,
+    "_Notes": "Server is too slow to respond."
   }
 }

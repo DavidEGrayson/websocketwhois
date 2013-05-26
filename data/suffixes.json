@@ -40,7 +40,10 @@
   },
   ".fr": {
     "ExampleExistingDomain": "abc.fr"
-  },  
+  },
+  ".fj": {
+    "ExampleExistingDomain": "usp.ac.fj"
+  },
   ".gov": {
     "ExampleExistingDomain": "usa.gov"
   },
@@ -169,6 +172,12 @@
   ".travel": {
     "ExampleExistingDomain": "paris.travel"
   },
+  ".tw": {
+    "ExampleExistingDomain": "abc.tw"
+  },
+  ".tz": {
+    "ExampleExistingDomain": "aa.co.tz"
+  },
   ".biz.ua": {
     "ExampleExistingDomain": "a.biz.ua"
   },
@@ -180,6 +189,9 @@
   },
   ".ac.uk": {
     "ExampleExistingDomain": "jobs.ac.uk"
+  },
+  ".web.za": {
+    "ExampleExistingDomain": "www.web.za"
   },
   ".gov.za": {
     "ExampleExistingDomain": "www.gov.za"

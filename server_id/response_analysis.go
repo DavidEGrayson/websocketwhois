@@ -29,7 +29,6 @@ func responseAnalysisInit() {
     `(?i)^no entries found for the selected source\(s\)\.$`,
     `(?i)^% no entries found in the selected source\(s\)\.$`,
     `(?i)^%error: no entries found$`,
-    `(?i)^% no such domain$`,
     `(?i)^No information available about domain name (\S+) in the registry nask database.$`,
     `(?i)^(\S+) no match$`,
     `(?i)^(\S+) is free$`,
@@ -44,8 +43,10 @@ func responseAnalysisInit() {
     `(?i)^domain (\S+) is free\.\s*$`,
     `(?i)^% no entries found for query "(\S+)"\.$`,
     `(?i)^no entries found for domain (\S+)$`,
+    `(?i)^% no entries found for (\S+)$`,
     `(?i)^% no data was found to match the request criteria\.$`,
-    `(?i)^no such domain (\S+)$`,
+    `(?i)^% no such domain$`,
+    `(?i)^no such domain:? (\S+)$`,
     `(?i)^no match$`,
     `(?i)^no match\.$`,
     `(?i)^no match\!+$`,
@@ -55,6 +56,7 @@ func responseAnalysisInit() {
     `(?i)^not found: (\S+)$`,
     `(?i)^not found\.+$`,
     `(?i)^not found$`,
+    `(?i)^no found$`,
     `(?i)^% nothing found$`,
     `(?i)^we do not have an entry in our database matching your query\.$`,
     `(?i)^(\S+): no existe$`,
@@ -71,6 +73,7 @@ func responseAnalysisInit() {
     `(?i)^%error:103: domain is not registered$`,
     `(?i)^%error:101: no entries found$`,
     `(?i)^status: available \(no match for domain "(\S+)"\)$`,
+    `(?i)^the domain (\S+) was not found\!$`,
   })
 
   scheme1.existPatterns = newPatternSet([]string {
@@ -86,6 +89,7 @@ func responseAnalysisInit() {
     `(?i)^domain name \(ascii\):\s*(\S+)$`,
     `(?i)^\s*nombre de dominio:\s*(\S+)$`,
     `(?i)^domain-name\s+(\S+)$`,
+    `(?i)^domain +name:\s+(\S+)\s+status:\s+active$`,
   })
 
   scheme2.notExistPatterns = newPatternSet([]string {
