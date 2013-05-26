@@ -23,8 +23,10 @@ func responseAnalysisInit() {
     `(?i)^%?%? ?no entries found in the \S+ database`,
     `(?i)^sorry, but domain: "(\S+)", not found in database`,
     `(?i)^domain not found$`,
+    `(?i)^domain (\S+) not found$`,
     `(?i)^(\S+) is available\.$`,
     `(?i)^no entries found for the selected source\.$`,
+    `(?i)^no entries found for the selected source\(s\)\.$`,
     `(?i)^% no entries found in the selected source\(s\)\.$`,
     `(?i)^%error: no entries found$`,
     `(?i)^% no such domain$`,
@@ -35,6 +37,7 @@ func responseAnalysisInit() {
     `(?i)^key not found$`,
     `(?i)^no match found for (\S+)$`,
     `(?i)^no match for "?([^"]+)"?\.?$`,
+    `(?i)^% no match for "?([^"]+)"?\.?$`,
     `(?i)^no match for domain "(\S+)" \(ascii\):\s*$`,
     `(?i)^the domain has not been registered\.$`,
     `(?i)^% This query returned 0 objects\.$`,
@@ -43,12 +46,14 @@ func responseAnalysisInit() {
     `(?i)^no entries found for domain (\S+)$`,
     `(?i)^% no data was found to match the request criteria\.$`,
     `(?i)^no such domain (\S+)$`,
-    `(?i)^no match(|.|!|!!)$`,
+    `(?i)^no match$`,
+    `(?i)^no match\.$`,
+    `(?i)^no match\!+$`,
     `(?i)^above domain name is not registered to krnic\.$`,
     `(?i)^domain "(\S+)" - available$`,
     `(?i)^"(\S+)" not found\.$`,
     `(?i)^not found: (\S+)$`,
-    `(?i)^not found\.\.\.$`,
+    `(?i)^not found\.+$`,
     `(?i)^not found$`,
     `(?i)^% nothing found$`,
     `(?i)^we do not have an entry in our database matching your query\.$`,
@@ -63,6 +68,9 @@ func responseAnalysisInit() {
     `(?i)^domain name (\S+) does not exist in database\!$`,
     `(?i)^available$`,
     `(?i)^no data found$`,
+    `(?i)^%error:103: domain is not registered$`,
+    `(?i)^%error:101: no entries found$`,
+    `(?i)^status: available \(no match for domain "(\S+)"\)$`,
   })
 
   scheme1.existPatterns = newPatternSet([]string {
@@ -77,6 +85,7 @@ func responseAnalysisInit() {
     `(?i)^domain name\.+:\s*(\S+)$`,
     `(?i)^domain name \(ascii\):\s*(\S+)$`,
     `(?i)^\s*nombre de dominio:\s*(\S+)$`,
+    `(?i)^domain-name\s+(\S+)$`,
   })
 
   scheme2.notExistPatterns = newPatternSet([]string {

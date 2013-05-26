@@ -260,5 +260,16 @@
     "Protocol": "generic",
     "NotExistRegexp": "(?i)^no data found $",
     "ExistRegexp": "(?i)^(domain name:\\s*\\S+|restricted|reserved)$"
+  },
+  "whois.ripe.net": {
+    "DoNotUse": true,
+    "_Notes": "Could not figure out how to use it: could not find an existing domain."
+  },
+  "whois.srs.net.nz": {
+    "DoNotUse": true,
+    "_Notes": "Could not figure out how to use this server.",
+    "Protocol": "genric",
+    "NotExistRegexp": "(?i)^query_status: 500 Invalid characters in query string$",
+    "ExistRegexp": ""
   }
 }

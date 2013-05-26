@@ -148,8 +148,20 @@
   ".st": {
     "ExampleExistingDomain": "abc.st"
   },
+  ".sx": {
+    "ExampleExistingDomain": "thepiratebay.sx"
+  },
+  ".sy": {
+    "ExampleExistingDomain": "tld.sy"
+  },
   ".tf": {
     "ExampleExistingDomain": "abc.tf"
+  },
+  ".th": {
+    "ExampleExistingDomain": "abc.co.th"
+  },
+  ".tn": {
+    "ExampleExistingDomain": "abc.tn"
   },
   ".tr": {
     "ExampleExistingDomain": "aa.com.tr"
