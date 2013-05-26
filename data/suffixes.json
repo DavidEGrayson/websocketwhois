@@ -11,6 +11,9 @@
   ".priv.at": {
     "ExampleExistingDomain": "nic.priv.at"
   },
+  ".bg": {
+    "ExampleExistingDomain": "abc.bg"
+  },
   ".br": {
     "ExampleExistingDomain": "aa.com.br"
   },
@@ -43,6 +46,9 @@
   },
   ".ht": {
     "ExampleExistingDomain": "nic.ht"
+  },
+  ".id": {
+    "ExampleExistingDomain": "abc.or.id"
   },
   ".ie": {
     "ExampleExistingDomain": "aaa.ie",
@@ -124,6 +130,9 @@
   ".eu.org": {
     "ExampleExistingDomain": "france.eu.org"
   },
+  ".ps": {
+    "ExampleExistingDomain": "abc.ps"
+  },
   ".pt": {
     "ExampleExistingDomain": "dns.pt"
   },
@@ -145,11 +154,17 @@
   ".tr": {
     "ExampleExistingDomain": "aa.com.tr"
   },
+  ".travel": {
+    "ExampleExistingDomain": "paris.travel"
+  },
   ".biz.ua": {
     "ExampleExistingDomain": "a.biz.ua"
   },
   ".co.ua": {
     "ExampleExistingDomain": "hair.co.ua"
+  },
+  ".pp.ua": {
+    "ExampleExistingDomain": "shoes.pp.ua"
   },
   ".ac.uk": {
     "ExampleExistingDomain": "jobs.ac.uk"

@@ -229,8 +229,36 @@
     "_Notes": "I/O timeout."
   },
   "whois.nic.tr": {
+    "Protocol": "generic",
     "ExistRegexp": "(?i)(invalid input|created on.*)$",
-    "NotExistRegexp": "(?i)^no match found for \S+$",
+    "NotExistRegexp": "(?i)^no match found for \\S+$",
     "_Notes": "express the invalid domain response better"
   },
+  "whois.nic.uk": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(^i)\\s*no match for \"(\\S+)\"\\.\\s*$",
+    "ExistRegexp": "(^i)\\s*domain name:\\s*$",
+    "_Notes": "TODO: build in the UK naming rules and then auto-detect this one's protocol"
+  },
+  "whois.nic.ve": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout."
+  },
+  "whois.registry.hm": {
+    "DoNotUse": true,
+    "_Notes": "I/O timeout."
+  },
+  "whois.registry.in": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^not found$",
+    "ExistRegexp": "(?i)domain name:\\s*(\\S+)\\s*$"
+  },
+  "whois.registry.net.za": {
+    "RateLimit": true
+  },
+  "whois.registry.om": {
+    "Protocol": "generic",
+    "NotExistRegexp": "(?i)^no data found $",
+    "ExistRegexp": "(?i)^(domain name:\\s*\\S+|restricted|reserved)$"
+  }
 }

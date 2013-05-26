@@ -43,8 +43,7 @@ func responseAnalysisInit() {
     `(?i)^no entries found for domain (\S+)$`,
     `(?i)^% no data was found to match the request criteria\.$`,
     `(?i)^no such domain (\S+)$`,
-    `(?i)^no match!$`,
-    `(?i)^no match.?$`,
+    `(?i)^no match(|.|!|!!)$`,
     `(?i)^above domain name is not registered to krnic\.$`,
     `(?i)^domain "(\S+)" - available$`,
     `(?i)^"(\S+)" not found\.$`,
@@ -60,6 +59,10 @@ func responseAnalysisInit() {
     `(?i)^\*\*\* nothing found for this query\.$`,
     `(?i)^this domain is not available in our whois database$`,
     `(?i)^no_se_encontro_el_objeto/object_not_found$`,
+    `(?i)^internal error\. probably object not exists\.$`,
+    `(?i)^domain name (\S+) does not exist in database\!$`,
+    `(?i)^available$`,
+    `(?i)^no data found$`,
   })
 
   scheme1.existPatterns = newPatternSet([]string {
